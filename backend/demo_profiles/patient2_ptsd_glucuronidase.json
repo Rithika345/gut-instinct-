@@ -1,3 +1,86 @@
 {
-  "_comment": "TODO: Add patient 2 demo profile data (PTSD + glucuronidase)"
+  "patient_id": "DEMO-002",
+  "profile_description": "PTSD patient with high abundance of beta-glucuronidase producing taxa. Moderately diverse microbiome but enriched in GUS-positive species. No prior medication failures.",
+  "diagnosis": "Post-Traumatic Stress Disorder",
+  "current_medications": [
+    "Prazosin"
+  ],
+  "prior_failures": [],
+  "taxa": [
+    {
+      "taxon": "Ruminococcus gnavus",
+      "phylum": "Firmicutes",
+      "relative_abundance_pct": 11.4
+    },
+    {
+      "taxon": "Clostridium scindens",
+      "phylum": "Firmicutes",
+      "relative_abundance_pct": 6.8
+    },
+    {
+      "taxon": "Clostridium bolteae",
+      "phylum": "Firmicutes",
+      "relative_abundance_pct": 5.3
+    },
+    {
+      "taxon": "Enterococcus faecalis",
+      "phylum": "Firmicutes",
+      "relative_abundance_pct": 9.2
+    },
+    {
+      "taxon": "Faecalibacterium prausnitzii",
+      "phylum": "Firmicutes",
+      "relative_abundance_pct": 8.7
+    },
+    {
+      "taxon": "Eubacterium rectale",
+      "phylum": "Firmicutes",
+      "relative_abundance_pct": 6.1
+    },
+    {
+      "taxon": "Lactobacillus rhamnosus",
+      "phylum": "Firmicutes",
+      "relative_abundance_pct": 3.4
+    },
+    {
+      "taxon": "Bacteroides fragilis",
+      "phylum": "Bacteroidetes",
+      "relative_abundance_pct": 7.6
+    },
+    {
+      "taxon": "Bacteroides thetaiotaomicron",
+      "phylum": "Bacteroidetes",
+      "relative_abundance_pct": 5.9
+    },
+    {
+      "taxon": "Escherichia coli",
+      "phylum": "Proteobacteria",
+      "relative_abundance_pct": 4.3
+    },
+    {
+      "taxon": "Bifidobacterium longum",
+      "phylum": "Actinobacteria",
+      "relative_abundance_pct": 5.2
+    },
+    {
+      "taxon": "Bifidobacterium adolescentis",
+      "phylum": "Actinobacteria",
+      "relative_abundance_pct": 3.1
+    },
+    {
+      "taxon": "Eggerthella lenta",
+      "phylum": "Actinobacteria",
+      "relative_abundance_pct": 4.7
+    },
+    {
+      "taxon": "Akkermansia muciniphila",
+      "phylum": "Verrucomicrobia",
+      "relative_abundance_pct": 3.8
+    },
+    {
+      "taxon": "Lactobacillus reuteri",
+      "phylum": "Firmicutes",
+      "relative_abundance_pct": 2.1
+    }
+  ]
 }

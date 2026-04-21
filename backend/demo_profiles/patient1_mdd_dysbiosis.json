@@ -1,3 +1,86 @@
 {
-  "_comment": "TODO: Add patient 1 demo profile data (MDD + dysbiosis)"
+  "patient_id": "DEMO-001",
+  "profile_description": "MDD patient with post-antibiotic dysbiosis. Recent course of broad-spectrum antibiotics depleted Firmicutes. Overgrown Proteobacteria. Previously failed Sertraline.",
+  "diagnosis": "Major Depressive Disorder",
+  "current_medications": [],
+  "prior_failures": [
+    "Sertraline"
+  ],
+  "taxa": [
+    {
+      "taxon": "Escherichia coli",
+      "phylum": "Proteobacteria",
+      "relative_abundance_pct": 18.5
+    },
+    {
+      "taxon": "Klebsiella pneumoniae",
+      "phylum": "Proteobacteria",
+      "relative_abundance_pct": 8.2
+    },
+    {
+      "taxon": "Bacteroides fragilis",
+      "phylum": "Bacteroidetes",
+      "relative_abundance_pct": 14.3
+    },
+    {
+      "taxon": "Bacteroides thetaiotaomicron",
+      "phylum": "Bacteroidetes",
+      "relative_abundance_pct": 9.1
+    },
+    {
+      "taxon": "Bacteroides vulgatus",
+      "phylum": "Bacteroidetes",
+      "relative_abundance_pct": 6.7
+    },
+    {
+      "taxon": "Enterococcus faecalis",
+      "phylum": "Firmicutes",
+      "relative_abundance_pct": 7.4
+    },
+    {
+      "taxon": "Clostridium bolteae",
+      "phylum": "Firmicutes",
+      "relative_abundance_pct": 3.2
+    },
+    {
+      "taxon": "Ruminococcus gnavus",
+      "phylum": "Firmicutes",
+      "relative_abundance_pct": 4.8
+    },
+    {
+      "taxon": "Faecalibacterium prausnitzii",
+      "phylum": "Firmicutes",
+      "relative_abundance_pct": 2.1
+    },
+    {
+      "taxon": "Eubacterium rectale",
+      "phylum": "Firmicutes",
+      "relative_abundance_pct": 1.3
+    },
+    {
+      "taxon": "Bifidobacterium longum",
+      "phylum": "Actinobacteria",
+      "relative_abundance_pct": 1.8
+    },
+    {
+      "taxon": "Eggerthella lenta",
+      "phylum": "Actinobacteria",
+      "relative_abundance_pct": 2.6
+    },
+    {
+      "taxon": "Akkermansia muciniphila",
+      "phylum": "Verrucomicrobia",
+      "relative_abundance_pct": 0.8
+    },
+    {
+      "taxon": "Pseudomonas aeruginosa",
+      "phylum": "Proteobacteria",
+      "relative_abundance_pct": 3.1
+    },
+    {
+      "taxon": "Prevotella copri",
+      "phylum": "Bacteroidetes",
+      "relative_abundance_pct": 1.2
+    }
+  ]
 }
