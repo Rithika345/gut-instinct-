@@ -1,5 +1,6 @@
 # Gut Instinct
 
+<<<<<<< HEAD
 **Pharmacomicrobiomics clinical decision support — a 4-agent AI pipeline that maps gut microbiome composition to psychiatric drug recommendations.**
 
 Built overnight by [Rithika Krishna](https://github.com/Rithika345) and Aparna as part of the wAIve project.
@@ -219,3 +220,6 @@ This tool does not replace clinical judgment.
 Rithika Krishna and Aparna — co-founders of [wAIve](https://github.com/Rithika345).
 
 Built at the intersection of agentic AI and pharmacomicrobiomics. Agent prompt engineering, knowledge base curation, demo profile design, pipeline QA, and frontend were all co-developed.
+=======
+<!-- TODO: Add project description, setup instructions, and usage documentation. -->
+>>>>>>> 06c2c928af4ab2f384b6c942c59bde2998fb386e
