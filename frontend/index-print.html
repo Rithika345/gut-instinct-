@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8"/>
+  <title>Gut Instinct — Analysis Report</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+  <style>
+    /* ── Tokens ── */
+    :root {
+      --accent:     oklch(0.55 0.14 216);
+      --accent-muted: oklch(0.93 0.04 216);
+      --green:      oklch(0.52 0.14 148);
+      --amber:      oklch(0.62 0.14 72);
+      --red:        oklch(0.52 0.18 22);
+      --green-bg:   oklch(0.96 0.04 148);
+      --amber-bg:   oklch(0.97 0.04 72);
+      --red-bg:     oklch(0.96 0.05 22);
+      --bg:         #ffffff;
+      --surface:    #ffffff;
+      --surface2:   oklch(0.975 0.007 216);
+      --border:     oklch(0.91 0.02 216);
+      --text:       oklch(0.17 0.02 216);
+      --text2:      oklch(0.45 0.03 216);
+      --text3:      oklch(0.62 0.02 216);
+    }
+    /* ── Print ── */
+    @page { size: A4 portrait; margin: 14mm 16mm 18mm; }
+    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { background: #fff; font-family: 'DM Sans', sans-serif; color: var(--text); font-size: 10.5pt; line-height: 1.55; -webkit-font-smoothing: antialiased; }
+
+    /* ── Page breaks ── */
+    .page        { break-before: page; }
+    .avoid-break { break-inside: avoid; }
+
+    /* ── Cover ── */
+    .cover {
+      min-height: 96vh; display: flex; flex-direction: column; justify-content: center;
+      border-bottom: 2px solid var(--border); padding-bottom: 2rem;
+    }
+    .cover-tag {
+      font-size: 7.5pt; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--accent); background: var(--accent-muted);
+      display: inline-block; padding: 0.3rem 0.75rem; border-radius: 100px; margin-bottom: 1.5rem;
+    }
+    .cover-title { font-size: 34pt; font-weight: 300; letter-spacing: -0.03em; line-height: 1.1; color: var(--text); margin-bottom: 1rem; }
+    .cover-sub   { font-size: 11pt; color: var(--text2); max-width: 480px; margin-bottom: 2.5rem; font-weight: 300; }
+    .cover-meta  { display: flex; gap: 2rem; flex-wrap: wrap; }
+    .cover-meta-item label { font-size: 7pt; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text3); display: block; margin-bottom: 0.2rem; }
+    .cover-meta-item span  { font-size: 9pt; color: var(--text2); }
+    .cover-disclaimer { margin-top: auto; padding-top: 2rem; font-size: 7.5pt; color: var(--text3); border-top: 1px solid var(--border); }
+
+    /* ── Pipeline ── */
+    .pipeline-section { padding: 1.5rem 0; border-bottom: 1px solid var(--border); }
+    .section-label { font-size: 7pt; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.35rem; }
+    .section-title { font-size: 16pt; font-weight: 400; letter-spacing: -0.02em; color: var(--text); margin-bottom: 0.4rem; }
+    .section-sub   { font-size: 9pt; color: var(--text2); max-width: 480px; font-weight: 300; }
+    .agents-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.6rem; margin-top: 1rem; }
+    .agent-box { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 0.75rem; }
+    .agent-num  { font-family: 'DM Mono', monospace; font-size: 7pt; color: var(--accent); font-weight: 500; margin-bottom: 0.3rem; }
+    .agent-name { font-size: 8.5pt; font-weight: 600; color: var(--text); margin-bottom: 0.25rem; }
+    .agent-desc { font-size: 7.5pt; color: var(--text2); line-height: 1.45; }
+
+    /* ── Patient header ── */
+    .patient-header { padding: 1.25rem 0 1rem; border-bottom: 1px solid var(--border); margin-bottom: 1rem; }
+    .patient-id { font-family: 'DM Mono', monospace; font-size: 7.5pt; color: var(--accent); font-weight: 500; margin-bottom: 0.3rem; }
+    .patient-summary { font-size: 9pt; color: var(--text2); line-height: 1.6; max-width: 600px; }
+
+    /* ── Shared card ── */
+    .print-card { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; margin-bottom: 0.75rem; }
+    .card-title { font-size: 7pt; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text3); margin-bottom: 0.6rem; }
+    .chart-note { font-size: 7.5pt; color: var(--text3); margin-bottom: 0.75rem; font-style: italic; }
+
+    /* ── Tier badge ── */
+    .tier-badge { display: inline-flex; align-items: center; font-size: 6.5pt; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; padding: 0.18rem 0.55rem; border-radius: 100px; }
+    .tier-green { color: var(--green); background: var(--green-bg); }
+    .tier-amber { color: var(--amber); background: var(--amber-bg); }
+    .tier-red   { color: var(--red);   background: var(--red-bg); }
+
+    /* ── Drug scores ── */
+    .score-row { display: flex; align-items: center; gap: 0.5rem; padding: 0.45rem 0.6rem; background: #fff; border: 1px solid var(--border); border-radius: 6px; margin-bottom: 0.35rem; }
+    .score-rank { font-family: 'DM Mono', monospace; font-size: 7pt; color: var(--text3); min-width: 16px; }
+    .score-name { font-size: 8.5pt; font-weight: 500; color: var(--text); min-width: 90px; }
+    .score-track { flex: 1; height: 7px; background: var(--border); border-radius: 100px; overflow: hidden; display: flex; }
+    .score-seg-ortho { height: 100%; background: var(--accent); opacity: 0.82; }
+    .score-seg-gus   { height: 100%; background: var(--amber); opacity: 0.82; }
+    .score-num { font-family: 'DM Mono', monospace; font-size: 7.5pt; font-weight: 500; min-width: 38px; text-align: right; }
+    .score-legend { display: flex; gap: 1rem; margin-top: 0.5rem; }
+    .sl-item { display: flex; align-items: center; gap: 0.3rem; font-size: 7pt; color: var(--text3); }
+    .sl-dot { width: 8px; height: 8px; border-radius: 2px; }
+
+    /* ── Taxa chart ── */
+    .phyla-legend { display: flex; flex-wrap: wrap; gap: 0.3rem; margin-bottom: 0.6rem; }
+    .phylum-chip { font-size: 6.5pt; font-weight: 500; padding: 0.15rem 0.5rem; border-radius: 100px; border: 1px solid; }
+    .taxon-row { display: flex; align-items: center; gap: 0.5rem; padding: 0.35rem 0.5rem; background: #fff; border: 1px solid var(--border); border-radius: 5px; margin-bottom: 0.3rem; }
+    .taxon-name { font-family: 'DM Mono', monospace; font-size: 7.5pt; font-style: italic; min-width: 180px; color: var(--text); }
+    .taxon-flags { display: flex; gap: 0.25rem; min-width: 90px; }
+    .taxon-flag { font-size: 6pt; font-weight: 700; padding: 0.1rem 0.35rem; border-radius: 3px; letter-spacing: 0.03em; }
+    .taxon-flag-gus { background: var(--amber-bg); color: var(--amber); }
+    .taxon-flag-cyp { background: var(--accent-muted); color: var(--accent); }
+    .taxon-bar-track { flex: 1; height: 6px; background: var(--border); border-radius: 100px; overflow: hidden; }
+    .taxon-bar-fill  { height: 100%; border-radius: 100px; }
+    .taxon-pct { font-family: 'DM Mono', monospace; font-size: 7pt; color: var(--text3); min-width: 32px; text-align: right; }
+
+    /* ── Drug card ── */
+    .drug-card-print { border: 1px solid var(--border); border-radius: 7px; margin-bottom: 0.6rem; overflow: hidden; }
+    .drug-card-print--caution { border-color: oklch(0.52 0.18 22 / 0.35); }
+    .dcph { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; padding: 0.6rem 0.75rem; background: var(--surface2); }
+    .dcph-left  { display: flex; align-items: center; gap: 0.5rem; }
+    .dcph-right { display: flex; align-items: center; gap: 0.5rem; }
+    .drug-name-p { font-size: 9pt; font-weight: 600; color: var(--text); }
+    .score-bar-mini { display: flex; align-items: center; gap: 0.35rem; }
+    .sbt { width: 60px; height: 5px; background: var(--border); border-radius: 100px; overflow: hidden; }
+    .sbf { height: 100%; border-radius: 100px; }
+    .sbn { font-family: 'DM Mono', monospace; font-size: 7pt; font-weight: 500; }
+    .drug-one-liner-p { padding: 0.4rem 0.75rem; font-size: 7.5pt; color: var(--text2); background: #fff; border-top: 1px solid var(--border); }
+    .drug-details-p { padding: 0.6rem 0.75rem; background: #fff; border-top: 1px solid var(--border); }
+    .drug-exp-p { font-size: 7.5pt; color: var(--text2); line-height: 1.55; margin-bottom: 0.5rem; }
+    .detail-sub { font-size: 6.5pt; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; color: var(--text3); margin: 0.4rem 0 0.25rem; }
+    .interaction-row-p { display: flex; gap: 0.4rem; padding: 0.4rem 0.5rem; background: var(--surface2); border: 1px solid var(--border); border-radius: 5px; margin-bottom: 0.3rem; font-size: 7.5pt; }
+    .int-icon { color: var(--text3); flex-shrink: 0; }
+    .int-desc { color: var(--text); font-weight: 500; }
+    .int-impl { color: var(--text2); }
+    .int-taxa { color: var(--text3); font-style: italic; margin-top: 0.1rem; font-size: 7pt; }
+    .risk-flag-p { font-size: 7.5pt; color: var(--red); background: var(--red-bg); padding: 0.25rem 0.5rem; border-radius: 4px; margin-bottom: 0.25rem; }
+    .adj-p { font-size: 7.5pt; color: var(--text2); }
+
+    /* ── Network ── */
+    .network-container { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 0.75rem; }
+    .net-legend { display: flex; gap: 1rem; margin-top: 0.5rem; flex-wrap: wrap; }
+    .nl-item { display: flex; align-items: center; gap: 0.3rem; font-size: 7pt; color: var(--text2); }
+    .nl-line { width: 16px; height: 2px; border-radius: 1px; display: inline-block; }
+
+    /* ── Caveats ── */
+    .caveat-row { display: flex; gap: 0.5rem; padding: 0.4rem 0; border-bottom: 1px solid var(--border); font-size: 7.5pt; color: var(--text2); }
+    .caveat-row:last-child { border-bottom: none; }
+    .caveat-num { font-family: 'DM Mono', monospace; font-size: 7pt; color: var(--text3); flex-shrink: 0; min-width: 20px; margin-top: 0.1rem; }
+    .disclaimer-p { font-size: 7pt; color: var(--text3); padding: 0.6rem; border: 1px solid var(--border); border-radius: 6px; background: var(--surface2); margin-top: 0.75rem; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script src="demo-data.js"></script>
+  <script type="text/babel">
+    const PHYLUM_COLORS = {
+      'Proteobacteria': 'oklch(0.62 0.14 52)',
+      'Bacteroidetes':  'oklch(0.55 0.12 248)',
+      'Firmicutes':     'oklch(0.52 0.14 148)',
+      'Actinobacteria': 'oklch(0.55 0.13 308)',
+      'Verrucomicrobia':'oklch(0.52 0.12 198)',
+    };
+    const pc = p => PHYLUM_COLORS[p] || '#999';
+    const scoreColor = s => s < 0.35 ? 'var(--green)' : s < 0.6 ? 'var(--amber)' : 'var(--red)';
+    const tierFromScore = s => s < 0.35 ? 'Recommended' : s < 0.6 ? 'Consider' : 'Caution';
+
+    function TierBadge({ tier }) {
+      const cls = tier === 'Recommended' ? 'tier-green' : tier === 'Consider' ? 'tier-amber' : 'tier-red';
+      return <span className={`tier-badge ${cls}`}>{tier}</span>;
+    }
+
+    // ── Drug Scores ──────────────────────────────────────────────────────────
+    function DrugScoresSection({ scores }) {
+      const sorted = [...scores].sort((a, b) => a.score - b.score);
+      return (
+        <div className="print-card avoid-break">
+          <div className="card-title">Agent 3 Output — Drug Interference Scores</div>
+          <div className="chart-note">Lower score = less predicted microbiome interference. Bars show CYP ortholog (blue) and GUS reactivation (amber) risk components.</div>
+          {sorted.map((d, i) => {
+            const op = d.components ? Math.round(d.components.ortho * 100) : 0;
+            const gp = d.components ? Math.round(d.components.gus * 100) : 0;
+            const tot = Math.round(d.score * 100);
+            return (
+              <div key={d.name} className="score-row">
+                <span className="score-rank">#{i+1}</span>
+                <span className="score-name">{d.name}</span>
+                <div className="score-track">
+                  <div className="score-seg-ortho" style={{ width: `${op}%` }}/>
+                  <div className="score-seg-gus" style={{ width: `${gp}%` }}/>
+                </div>
+                <span className="score-num" style={{ color: scoreColor(d.score) }}>{tot}/100</span>
+                <TierBadge tier={tierFromScore(d.score)} />
+              </div>
+            );
+          })}
+          <div className="score-legend">
+            <span className="sl-item"><span className="sl-dot" style={{background:'var(--accent)',opacity:0.85}}/>CYP ortholog degradation</span>
+            <span className="sl-item"><span className="sl-dot" style={{background:'var(--amber)',opacity:0.85}}/>β-Glucuronidase reactivation</span>
+          </div>
+        </div>
+      );
+    }
+
+    // ── Taxa Chart ───────────────────────────────────────────────────────────
+    function TaxaSection({ taxa }) {
+      const sorted = [...taxa].sort((a, b) => b.abundance - a.abundance);
+      const max = sorted[0].abundance;
+      const phylaSet = [...new Set(sorted.map(t => t.phylum))];
+      return (
+        <div className="print-card">
+          <div className="card-title">Agent 2 Input — Microbiome Profile</div>
+          <div className="chart-note">Relative abundances of gut taxa. GUS = β-glucuronidase producer. CYP tags = enzyme ortholog families present.</div>
+          <div className="phyla-legend">
+            {phylaSet.map(p => (
+              <span key={p} className="phylum-chip" style={{ color: pc(p), background: pc(p)+'1a', borderColor: pc(p)+'44' }}>{p}</span>
+            ))}
+          </div>
+          {sorted.map(t => (
+            <div key={t.name} className="taxon-row">
+              <span className="taxon-name">{t.name}</span>
+              <div className="taxon-flags">
+                {t.gus && <span className="taxon-flag taxon-flag-gus">GUS</span>}
+                {t.cyp && <span className="taxon-flag taxon-flag-cyp">{t.cyp}</span>}
+              </div>
+              <div className="taxon-bar-track">
+                <div className="taxon-bar-fill" style={{ width: `${(t.abundance/max)*100}%`, background: pc(t.phylum) }}/>
+              </div>
+              <span className="taxon-pct">{t.abundance.toFixed(1)}%</span>
+            </div>
+          ))}
+        </div>
+      );
+    }
+
+    // ── Interaction Network ──────────────────────────────────────────────────
+    function NetworkSection({ graph }) {
+      const W = 520, PAD_X = 20, PAD_TOP = 44, ROW_H = 42, NODE_R = 6;
+      const taxaX = 140, drugX = W - 140;
+      const tCount = graph.taxa_nodes.length, dCount = graph.drug_nodes.length;
+      const taxaH = (tCount-1)*ROW_H, drugH = (dCount-1)*ROW_H;
+      const H = Math.max(taxaH, drugH) + PAD_TOP + 48;
+      const taxaStartY = PAD_TOP + (H - PAD_TOP - 32 - taxaH)/2;
+      const drugStartY = PAD_TOP + (H - PAD_TOP - 32 - drugH)/2;
+      const tPos = graph.taxa_nodes.map((t,i) => ({...t, x:taxaX, y:taxaStartY+i*ROW_H}));
+      const dPos = graph.drug_nodes.map((d,i) => ({...d, x:drugX, y:drugStartY+i*ROW_H}));
+      const tById = Object.fromEntries(tPos.map(t=>[t.id,t]));
+      const dById = Object.fromEntries(dPos.map(d=>[d.id,d]));
+      const edgeColor = type => type === 'gus' ? 'var(--amber)' : 'var(--accent)';
+      return (
+        <div className="print-card avoid-break">
+          <div className="card-title">Agent 3 Output — Interaction Network</div>
+          <div className="chart-note">Blue = CYP enzyme ortholog · Amber = β-glucuronidase reactivation · Edge weight ∝ evidence × abundance</div>
+          <div className="network-container">
+            <svg width="100%" viewBox={`0 0 ${W} ${H}`} style={{fontFamily:'DM Sans,sans-serif'}}>
+              <text x={taxaX} y={20} textAnchor="middle" fontSize="8" fontWeight="600" fill="var(--text3)" letterSpacing="0.07em">MICROBIOME TAXA</text>
+              <text x={drugX} y={20} textAnchor="middle" fontSize="8" fontWeight="600" fill="var(--text3)" letterSpacing="0.07em">CANDIDATE DRUGS</text>
+              <line x1={taxaX-52} y1={27} x2={taxaX+52} y2={27} stroke="var(--border)" strokeWidth="0.8"/>
+              <line x1={drugX-52} y1={27} x2={drugX+52} y2={27} stroke="var(--border)" strokeWidth="0.8"/>
+              {graph.edges.map((e,i) => {
+                const t=tById[e.taxon], d=dById[e.drug];
+                if(!t||!d) return null;
+                const cpX=W/2;
+                return (
+                  <path key={i}
+                    d={`M${t.x+NODE_R} ${t.y} C${cpX} ${t.y} ${cpX} ${d.y} ${d.x-NODE_R} ${d.y}`}
+                    fill="none" stroke={edgeColor(e.type)} strokeWidth={e.strength*2.2} opacity={0.32}
+                  />
+                );
+              })}
+              {tPos.map(t => (
+                <g key={t.id}>
+                  <circle cx={t.x} cy={t.y} r={NODE_R+2+Math.min(t.abundance/5,4)} fill={pc(t.phylum)} opacity={0.14}/>
+                  <circle cx={t.x} cy={t.y} r={NODE_R} fill={pc(t.phylum)}/>
+                  <text x={t.x-NODE_R-6} y={t.y+3} textAnchor="end" fontSize="9.5" fill="var(--text2)" fontStyle="italic">{t.label}</text>
+                  <text x={t.x-NODE_R-6} y={t.y+13} textAnchor="end" fontSize="7.5" fill="var(--text3)">{t.abundance}%</text>
+                </g>
+              ))}
+              {dPos.map(d => {
+                const color = d.tier==='Recommended' ? 'var(--green)' : d.tier==='Consider' ? 'var(--amber)' : 'var(--red)';
+                return (
+                  <g key={d.id}>
+                    <circle cx={d.x} cy={d.y} r={NODE_R+2} fill={color} opacity={0.15}/>
+                    <circle cx={d.x} cy={d.y} r={NODE_R} fill={color}/>
+                    <text x={d.x+NODE_R+7} y={d.y+4} textAnchor="start" fontSize="10" fill="var(--text)" fontWeight="500">{d.label}</text>
+                  </g>
+                );
+              })}
+            </svg>
+          </div>
+          <div className="net-legend">
+            <span className="nl-item"><span className="nl-line" style={{background:'var(--accent)'}}/>CYP ortholog</span>
+            <span className="nl-item"><span className="nl-line" style={{background:'var(--amber)'}}/>β-Glucuronidase</span>
+          </div>
+        </div>
+      );
+    }
+
+    // ── Drug Cards ───────────────────────────────────────────────────────────
+    function PrintDrugCard({ drug }) {
+      const icons = { ortholog_degradation:'⬡', enterohepatic_reactivation:'↻', neurotransmitter_modulation:'⊕' };
+      const sc = scoreColor(drug.metabolic_interference_score);
+      const pct = Math.round(drug.metabolic_interference_score * 100);
+      return (
+        <div className={`drug-card-print avoid-break ${drug.tier==='Caution' ? 'drug-card-print--caution' : ''}`}>
+          <div className="dcph">
+            <div className="dcph-left">
+              <TierBadge tier={drug.tier}/>
+              <span className="drug-name-p">{drug.drug_name}</span>
+            </div>
+            <div className="dcph-right">
+              <div className="score-bar-mini">
+                <div className="sbt"><div className="sbf" style={{width:`${pct}%`,background:sc}}/></div>
+                <span className="sbn" style={{color:sc}}>{pct}/100</span>
+              </div>
+            </div>
+          </div>
+          <div className="drug-one-liner-p">{drug.one_line_summary}</div>
+          <div className="drug-details-p">
+            <div className="drug-exp-p">{drug.detailed_explanation}</div>
+            <div className="detail-sub">Key Interactions</div>
+            {drug.key_interactions.map((ki,i) => (
+              <div key={i} className="interaction-row-p">
+                <span className="int-icon">{icons[ki.interaction_type]||'·'}</span>
+                <div>
+                  <div className="int-desc">{ki.description}</div>
+                  <div className="int-impl">→ {ki.clinical_implication}</div>
+                  <div className="int-taxa">{ki.taxa_involved.join(' · ')}</div>
+                </div>
+              </div>
+            ))}
+            {drug.risk_flags?.length > 0 && <>
+              <div className="detail-sub" style={{marginTop:'0.4rem'}}>Risk Flags</div>
+              {drug.risk_flags.map((f,i) => <div key={i} className="risk-flag-p">{f}</div>)}
+            </>}
+            {drug.potential_adjustments && <>
+              <div className="detail-sub" style={{marginTop:'0.4rem'}}>Clinical Guidance</div>
+              <div className="adj-p">{drug.potential_adjustments}</div>
+            </>}
+          </div>
+        </div>
+      );
+    }
+
+    // ── Patient Report ────────────────────────────────────────────────────────
+    function PatientReport({ data, label }) {
+      const rec = data.recommendation;
+      return (
+        <>
+          {/* Header */}
+          <div className="page patient-header">
+            <div className="section-label">Patient Case</div>
+            <div className="section-title" style={{fontSize:'18pt'}}>{label}</div>
+            <div className="patient-id">{rec.patient_id} · {rec.diagnosis}</div>
+            <div className="patient-summary" style={{marginTop:'0.4rem'}}>{rec.recommendation_summary}</div>
+          </div>
+
+          {/* Microbiome + Scores */}
+          <TaxaSection taxa={data.taxa}/>
+          <DrugScoresSection scores={data.drug_scores}/>
+
+          {/* Network */}
+          <NetworkSection graph={data.graph}/>
+
+          {/* Drug Recommendations */}
+          <div className="print-card" style={{marginTop:'0.25rem'}}>
+            <div className="card-title">Agent 4 Output — Clinical Recommendations</div>
+          </div>
+          {rec.drug_recommendations.map(d => <PrintDrugCard key={d.drug_name} drug={d}/>)}
+
+          {/* Microbiome context */}
+          <div className="print-card avoid-break" style={{marginTop:'0.5rem'}}>
+            <div className="card-title">Microbiome Context</div>
+            <div style={{fontSize:'8pt',color:'var(--text2)',lineHeight:'1.6',marginBottom:'0.6rem'}}>{rec.microbiome_context.summary}</div>
+            {rec.microbiome_context.key_taxa_of_concern.map((t,i) => (
+              <div key={i} className="taxon-row" style={{background:'#fff'}}>
+                <span className="taxon-name" style={{minWidth:'150px'}}>{t.taxon}</span>
+                <span style={{fontSize:'7.5pt',color:'var(--text2)',flex:1}}>{t.concern}</span>
+                {t.drugs_affected?.length > 0 && <span style={{fontSize:'7pt',color:'var(--accent)',flexShrink:0}}>{t.drugs_affected.join(' · ')}</span>}
+              </div>
+            ))}
+          </div>
+
+          {/* Caveats */}
+          <div className="print-card avoid-break" style={{marginTop:'0.5rem'}}>
+            <div className="card-title">Limitations & Caveats</div>
+            {rec.limitations_and_caveats.map((c,i) => (
+              <div key={i} className="caveat-row">
+                <span className="caveat-num">{String(i+1).padStart(2,'0')}</span>
+                <span>{c}</span>
+              </div>
+            ))}
+          </div>
+          <div className="disclaimer-p">{rec.disclaimer}</div>
+        </>
+      );
+    }
+
+    // ── Cover ─────────────────────────────────────────────────────────────────
+    function Cover() {
+      const today = new Date().toLocaleDateString('en-US', {year:'numeric',month:'long',day:'numeric'});
+      return (
+        <div className="cover">
+          <div className="cover-tag">Pharmacomicrobiomics · Clinical Decision Support</div>
+          <div className="cover-title">Gut Instinct<br/>Analysis Report</div>
+          <div className="cover-sub">Microbiome-informed drug recommendations for psychiatric prescribing — mapping gut bacteria against candidate drug pharmacokinetics via a 4-agent AI pipeline.</div>
+          <div className="cover-meta">
+            <div className="cover-meta-item"><label>Report Date</label><span>{today}</span></div>
+            <div className="cover-meta-item"><label>Cases Included</label><span>DEMO-001 (MDD) · DEMO-002 (PTSD)</span></div>
+            <div className="cover-meta-item"><label>Pipeline</label><span>4-Agent Claude · Pharmacomicrobiomics KB</span></div>
+            <div className="cover-meta-item"><label>Data Mode</label><span>Pre-validated Simulation</span></div>
+          </div>
+          <div className="cover-disclaimer">This report is generated by a research prototype and is not validated for clinical use. All predictions are probabilistic and based on emerging pharmacomicrobiomics evidence. Microbiome-drug interactions are an active area of research. This tool does not replace clinical judgment.</div>
+        </div>
+      );
+    }
+
+    // ── Pipeline page ──────────────────────────────────────────────────────────
+    const AGENTS_DATA = [
+      {n:'01',name:'Pharmacokinetic Mapper',desc:'Extracts CYP enzyme pathways, protein binding, and glucuronidation flags for every candidate drug from a curated knowledge base.'},
+      {n:'02',name:'Ortholog Hunter',desc:"Matches human drug-metabolizing enzymes to bacterial orthologs present in this patient's microbiome, with evidence tiers and abundance weighting."},
+      {n:'03',name:'Graph Architect',desc:'Builds a drug-bacteria knowledge graph and computes a metabolic interference score (0–1) per drug based on ortholog degradation and GUS reactivation risk.'},
+      {n:'04',name:'Clinical Interpreter',desc:'Translates graph scores into tiered (Recommended / Consider / Caution) clinician-readable recommendations with specific taxa and mechanisms cited.'},
+    ];
+    function PipelinePage() {
+      return (
+        <div className="pipeline-section page avoid-break">
+          <div className="section-label">4-Agent AI Pipeline</div>
+          <div className="section-title">From microbiome profile to clinical guidance</div>
+          <div className="section-sub">Each agent is a Claude model with a curated pharmacomicrobiomics system prompt. Outputs chain forward sequentially.</div>
+          <div className="agents-grid">
+            {AGENTS_DATA.map(a => (
+              <div key={a.n} className="agent-box">
+                <div className="agent-num">{a.n}</div>
+                <div className="agent-name">{a.name}</div>
+                <div className="agent-desc">{a.desc}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    // ── App ────────────────────────────────────────────────────────────────────
+    function PrintApp() {
+      return (
+        <div style={{maxWidth:'680px',margin:'0 auto'}}>
+          <Cover/>
+          <PipelinePage/>
+          <PatientReport data={DEMO_RESULTS.patient1_mdd_dysbiosis} label="DEMO-001 — Major Depressive Disorder / Post-Antibiotic Dysbiosis"/>
+          <PatientReport data={DEMO_RESULTS.patient2_ptsd_glucuronidase} label="DEMO-002 — Post-Traumatic Stress Disorder / High β-Glucuronidase Load"/>
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<PrintApp/>);
+
+    // Auto-print after fonts + Babel + render settle
+    document.fonts.ready.then(() => setTimeout(() => window.print(), 800));
+  </script>
+</body>
+</html>
