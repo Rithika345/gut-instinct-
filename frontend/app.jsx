@@ -4,7 +4,7 @@
 // After deploying to Railway, paste your Railway URL here (no trailing slash).
 // Example: 'https://gut-instinct-production.up.railway.app'
 // Leave as empty string to always use demo data.
-const BACKEND_URL = '';
+const BACKEND_URL = 'https://web-production-64fb7.up.railway.app';
 
 const { useState, useEffect, useRef } = React;
 
