@@ -1,0 +1,24 @@
+{
+  "patient_id": "DEMO-004",
+  "profile_description": "MDD patient with IBS comorbidity. Firmicutes-dominant dysbiosis with high Clostridium scindens and Clostridium bolteae creating heavy CYP3A4 pathway pressure. Depleted protective species. Demonstrates how CYP3A4-dependent drugs (Mirtazapine) lose their advantage when the microbiome shifts.",
+  "diagnosis": "Major Depressive Disorder",
+  "current_medications": [],
+  "prior_failures": [],
+  "taxa": [
+    { "taxon": "Clostridium scindens", "phylum": "Firmicutes", "relative_abundance_pct": 13.2 },
+    { "taxon": "Ruminococcus gnavus", "phylum": "Firmicutes", "relative_abundance_pct": 9.1 },
+    { "taxon": "Clostridium bolteae", "phylum": "Firmicutes", "relative_abundance_pct": 8.7 },
+    { "taxon": "Bacteroides fragilis", "phylum": "Bacteroidetes", "relative_abundance_pct": 7.8 },
+    { "taxon": "Enterococcus faecalis", "phylum": "Firmicutes", "relative_abundance_pct": 6.2 },
+    { "taxon": "Bacteroides thetaiotaomicron", "phylum": "Bacteroidetes", "relative_abundance_pct": 5.4 },
+    { "taxon": "Escherichia coli", "phylum": "Proteobacteria", "relative_abundance_pct": 4.6 },
+    { "taxon": "Bacteroides vulgatus", "phylum": "Bacteroidetes", "relative_abundance_pct": 4.3 },
+    { "taxon": "Eggerthella lenta", "phylum": "Actinobacteria", "relative_abundance_pct": 3.9 },
+    { "taxon": "Faecalibacterium prausnitzii", "phylum": "Firmicutes", "relative_abundance_pct": 3.8 },
+    { "taxon": "Klebsiella pneumoniae", "phylum": "Proteobacteria", "relative_abundance_pct": 3.2 },
+    { "taxon": "Eubacterium rectale", "phylum": "Firmicutes", "relative_abundance_pct": 2.6 },
+    { "taxon": "Pseudomonas aeruginosa", "phylum": "Proteobacteria", "relative_abundance_pct": 2.1 },
+    { "taxon": "Bifidobacterium longum", "phylum": "Actinobacteria", "relative_abundance_pct": 1.8 },
+    { "taxon": "Akkermansia muciniphila", "phylum": "Verrucomicrobia", "relative_abundance_pct": 1.4 }
+  ]
+}

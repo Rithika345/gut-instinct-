@@ -1,0 +1,24 @@
+{
+  "patient_id": "DEMO-003",
+  "profile_description": "GAD patient with healthy, diverse microbiome. High protective species (F. prausnitzii, E. rectale, Bifidobacterium). Minimal CYP-ortholog-carrying taxa. Demonstrates that the system correctly identifies when the microbiome is NOT a prescribing concern.",
+  "diagnosis": "Generalized Anxiety Disorder",
+  "current_medications": [],
+  "prior_failures": [],
+  "taxa": [
+    { "taxon": "Faecalibacterium prausnitzii", "phylum": "Firmicutes", "relative_abundance_pct": 14.8 },
+    { "taxon": "Eubacterium rectale", "phylum": "Firmicutes", "relative_abundance_pct": 9.6 },
+    { "taxon": "Bifidobacterium longum", "phylum": "Actinobacteria", "relative_abundance_pct": 7.9 },
+    { "taxon": "Bifidobacterium adolescentis", "phylum": "Actinobacteria", "relative_abundance_pct": 6.2 },
+    { "taxon": "Akkermansia muciniphila", "phylum": "Verrucomicrobia", "relative_abundance_pct": 5.4 },
+    { "taxon": "Lactobacillus rhamnosus", "phylum": "Firmicutes", "relative_abundance_pct": 4.8 },
+    { "taxon": "Bacteroides thetaiotaomicron", "phylum": "Bacteroidetes", "relative_abundance_pct": 4.6 },
+    { "taxon": "Lactobacillus reuteri", "phylum": "Firmicutes", "relative_abundance_pct": 4.1 },
+    { "taxon": "Bacteroides fragilis", "phylum": "Bacteroidetes", "relative_abundance_pct": 3.8 },
+    { "taxon": "Prevotella copri", "phylum": "Bacteroidetes", "relative_abundance_pct": 3.5 },
+    { "taxon": "Bacteroides vulgatus", "phylum": "Bacteroidetes", "relative_abundance_pct": 2.8 },
+    { "taxon": "Ruminococcus gnavus", "phylum": "Firmicutes", "relative_abundance_pct": 2.4 },
+    { "taxon": "Escherichia coli", "phylum": "Proteobacteria", "relative_abundance_pct": 2.0 },
+    { "taxon": "Enterococcus faecalis", "phylum": "Firmicutes", "relative_abundance_pct": 1.9 },
+    { "taxon": "Eggerthella lenta", "phylum": "Actinobacteria", "relative_abundance_pct": 1.4 }
+  ]
+}

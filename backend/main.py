@@ -8,10 +8,7 @@ import json
 from pathlib import Path
 
 from fastapi import FastAPI, HTTPException
-<<<<<<< HEAD
 from fastapi.middleware.cors import CORSMiddleware
-=======
->>>>>>> 06c2c928af4ab2f384b6c942c59bde2998fb386e
 
 from models import AnalyzeRequest, AnalyzeResponse
 from orchestrator import run_pipeline
@@ -22,7 +19,6 @@ app = FastAPI(
     version="0.1.0",
 )
 
-<<<<<<< HEAD
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
@@ -35,8 +31,6 @@ app.add_middleware(
     allow_headers=["Content-Type"],
 )
 
-=======
->>>>>>> 06c2c928af4ab2f384b6c942c59bde2998fb386e
 _DEMO_PROFILES_DIR = Path(__file__).resolve().parent / "demo_profiles"
 
 
