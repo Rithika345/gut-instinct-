@@ -12,6 +12,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from models import AnalyzeRequest, AnalyzeResponse
 from orchestrator import run_pipeline
+from formatter import format_for_frontend
 
 app = FastAPI(
     title="Gut Instinct API",
@@ -61,5 +62,27 @@ async def analyze(request: AnalyzeRequest) -> AnalyzeResponse:
         current_medications=request.current_medications,
         prior_failures=request.prior_failures,
     )
+
+    # Format for frontend visualization if pipeline succeeded
+    if result.get("status") == "success":
+        try:
+            formatted = format_for_frontend(
+                microbiome_profile=profile,
+                agent2_output=result.get("agent2_output", {}),
+                agent3_output=result.get("agent3_output", {}),
+                agent4_output=result.get("agent4_output", {}),
+            )
+            result["taxa"] = formatted["taxa"]
+            result["drug_scores"] = formatted["drug_scores"]
+            result["graph"] = formatted["graph"]
+            # Use the formatted recommendation (which is agent4 output)
+            result["recommendation"] = formatted["recommendation"]
+        except Exception as exc:
+            # If formatting fails, pipeline results are still returned
+            # and the frontend falls back to demo data
+            import logging
+            logging.getLogger(__name__).warning(
+                "Frontend formatting failed: %s. Raw agent outputs still returned.", exc
+            )
 
     return AnalyzeResponse(**result)

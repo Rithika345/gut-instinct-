@@ -38,4 +38,8 @@ class AnalyzeResponse(BaseModel):
     recommendation: dict | None = Field(
         None, description="Final clinical recommendation (same as agent4_output)"
     )
+    # Frontend-compatible fields (formatted from raw agent outputs)
+    taxa: list | None = Field(None, description="Microbiome taxa with GUS/CYP annotations")
+    drug_scores: list | None = Field(None, description="Drug interference scores for charts")
+    graph: dict | None = Field(None, description="Bipartite interaction graph for network viz")
     error: str | None = Field(None, description="Error message if pipeline failed")
