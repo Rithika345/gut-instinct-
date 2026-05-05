@@ -143,7 +143,7 @@ function Demo() {
     setIsLive(false);
     setStep(0);
 
-    // Try real FastAPI backend first (5 s timeout — Railway cold starts can be slow)
+    // Try real FastAPI backend (90 s timeout — 4 Claude API calls + potential cold start)
     let apiResult = null;
     if (BACKEND_URL) {
       try {
@@ -153,7 +153,7 @@ function Demo() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(caseObj.request),
           }),
-          new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), 5000)),
+          new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), 90000)),
         ]);
         if (res.ok) { apiResult = await res.json(); setIsLive(true); }
       } catch {}
@@ -168,11 +168,26 @@ function Demo() {
     setStep(4);
     await new Promise(r => setTimeout(r, 280));
 
-    // Merge API result with demo data (API result won't have taxa/graph/drug_scores)
+    // Merge API result with demo data — use live data when the backend provides it
     const base = DEMO_RESULTS[caseObj.id];
-    const merged = apiResult
-      ? { ...base, ...apiResult, taxa: base.taxa, drug_scores: base.drug_scores, graph: base.graph }
-      : base;
+    let merged;
+    if (apiResult && apiResult.taxa && apiResult.drug_scores && apiResult.graph) {
+      // Full live response — use everything from the backend
+      merged = apiResult;
+    } else if (apiResult) {
+      // Partial live response — fill gaps with demo data
+      merged = {
+        ...base,
+        ...apiResult,
+        taxa: apiResult.taxa || base.taxa,
+        drug_scores: apiResult.drug_scores || base.drug_scores,
+        graph: apiResult.graph || base.graph,
+        recommendation: apiResult.recommendation || base.recommendation,
+      };
+    } else {
+      // No backend — use hardcoded demo data
+      merged = base;
+    }
 
     setRunning(false);
     setResults(merged);
