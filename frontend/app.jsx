@@ -153,7 +153,7 @@ function Demo() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(caseObj.request),
           }),
-          new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), 900000)),
+          new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), 9000000)),
         ]);
         if (res.ok) { apiResult = await res.json(); setIsLive(true); }
       } catch {}
