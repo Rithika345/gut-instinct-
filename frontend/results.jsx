@@ -275,7 +275,7 @@ function RawOutputPanel({ data }) {
               <span className="raw-acc-toggle">{open === a.key ? '−' : '+'}</span>
             </button>
             {open === a.key && (
-              <pre className="raw-json">{JSON.stringify(payload, null, 2)}</pre>
+              <pre className="raw-json">{payload ? JSON.stringify(payload, null, 2) : "Connect to live API to view raw agent outputs. Demo mode uses pre-computed results."}</pre>
             )}
           </div>
         );
