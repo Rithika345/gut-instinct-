@@ -240,7 +240,7 @@ function Footer() {
   return (
     <footer className="footer">
       <div className="footer-logo">Gut Instinct</div>
-      <div className="footer-note">A pharmacomicrobiomics research prototype. Not validated for clinical use. Built with Claude.</div><div className="footer-note" style={{marginTop: "0.5rem"}}>Built by Rithika Krishna Perugupalli &amp; Aparna Ganapathi Basavapatna</div>
+      <div className="footer-note">A pharmacomicrobiomics research prototype by Rithika Krishna Perugupalli &amp; Aparna Ganapathi Basavapatna. Not validated for clinical use.</div><div className="footer-note" style={{marginTop: "0.5rem"}}>Built by Rithika Krishna Perugupalli &amp; Aparna Ganapathi Basavapatna</div>
     </footer>
   );
 }
