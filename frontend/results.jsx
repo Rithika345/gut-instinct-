@@ -265,18 +265,17 @@ function RawOutputPanel({ data }) {
   ];
   return (
     <div className="raw-panel">
-      <p className="chart-subtitle">Structured JSON from each pipeline agent. Click an agent to expand its full output.</p>
+      <p className="chart-subtitle">Structured JSON from each pipeline agent. In simulation mode, Agent 4 output (recommendation) is shown for all agents. Connect the local API to see per-agent data.</p>
       {agents.map(a => {
         const payload = data[a.key] || (a.key === 'agent4_output' ? data.recommendation : null);
-        const hasData = payload && typeof payload === 'object' && Object.keys(payload).length > 0;
         return (
           <div key={a.key} className="raw-accordion">
             <button className="raw-acc-header" onClick={() => setOpen(open === a.key ? null : a.key)}>
-              <span className="raw-acc-title">{a.label}{hasData ? '' : ' (awaiting live run)'}</span>
+              <span className="raw-acc-title">{a.label}</span>
               <span className="raw-acc-toggle">{open === a.key ? '−' : '+'}</span>
             </button>
             {open === a.key && (
-              <pre className="raw-json">{hasData ? JSON.stringify(payload, null, 2) : 'Raw output available after a live API run completes. Try clicking "Run Analysis" on a demo case — the pipeline takes 1–3 minutes.'}</pre>
+              <pre className="raw-json">{JSON.stringify(payload, null, 2)}</pre>
             )}
           </div>
         );

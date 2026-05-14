@@ -169,23 +169,20 @@ function Demo() {
     await new Promise(r => setTimeout(r, 280));
 
     // Merge API result with demo data — use live data when the backend provides it
-    const base = DEMO_RESULTS[caseObj.id] || {};
+    const base = DEMO_RESULTS[caseObj.id];
     let merged;
-    if (apiResult) {
-      // Live response — start from API result, fill visualization gaps from demo
+    if (apiResult && apiResult.taxa && apiResult.drug_scores && apiResult.graph) {
+      // Full live response — use everything from the backend
+      merged = apiResult;
+    } else if (apiResult) {
+      // Partial live response — fill gaps with demo data
       merged = {
         ...base,
         ...apiResult,
-        // Visualization fields: prefer live, fallback to demo
-        taxa: apiResult.taxa || base.taxa || [],
-        drug_scores: apiResult.drug_scores || base.drug_scores || [],
-        graph: apiResult.graph || base.graph || {},
-        recommendation: apiResult.recommendation || base.recommendation || null,
-        // Explicitly preserve raw agent outputs from live API
-        agent1_output: apiResult.agent1_output || null,
-        agent2_output: apiResult.agent2_output || null,
-        agent3_output: apiResult.agent3_output || null,
-        agent4_output: apiResult.agent4_output || null,
+        taxa: apiResult.taxa || base.taxa,
+        drug_scores: apiResult.drug_scores || base.drug_scores,
+        graph: apiResult.graph || base.graph,
+        recommendation: apiResult.recommendation || base.recommendation,
       };
     } else {
       // No backend — use hardcoded demo data
@@ -193,7 +190,6 @@ function Demo() {
     }
 
     setRunning(false);
-    console.log('[GUT INSTINCT] source:', apiResult ? 'LIVE API' : 'DEMO', '| keys:', Object.keys(merged).join(', '));
     setResults(merged);
 
     setTimeout(() => {
