@@ -283,10 +283,6 @@ function RawOutputPanel({ data }) {
       })}
     </div>
   );
-        );
-      })}
-    </div>
-  );
 }
 
 // ─── Clinical Report tab ──────────────────────────────────────────────────────
