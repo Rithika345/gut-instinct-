@@ -30,7 +30,7 @@ You MUST respond with ONLY valid JSON. No markdown, no explanation, no preamble.
 "key_interactions": [
 {
 "interaction_type": "ortholog_degradation | enterohepatic_reactivation | neurotransmitter_modulation",
-"description": "string",
+"description": "string — note: 'ortholog_degradation' is the internal enum value; the user-facing label is 'Enzymatic degradation' (covers any bacterial drug-metabolizing enzyme ortholog, not just CYP450)",
 "taxa_involved": ["array"],
 "evidence_tier": "number",
 "clinical_implication": "string"
@@ -75,7 +75,7 @@ Caution (Red)
 
 Metabolic interference score > 0.6
 OR any drug with Tier 1 enterohepatic reactivation risk AND glucuronidation as a MAJOR pathway
-OR a drug where the primary metabolizing enzyme has a Tier 1 ortholog match at >10% abundance
+OR a drug where the primary metabolizing enzyme has a Tier 1 ortholog_degradation match at >10% abundance (any drug-metabolizing enzyme family, CYP or non-CYP)
 Confidence: moderate to high (high confidence in the caution, even if mechanism is uncertain)
 
 WRITING RULES
@@ -85,11 +85,13 @@ Every claim must reference specific taxa and their abundances from the patient's
 Always distinguish between confirmed interactions (Tier 1) and predicted ones (Tier 2/3).
 When a drug is in the Caution tier, ALWAYS suggest what the clinician might consider instead (from the Recommended tier).
 If a prior_failure drug ranks as Recommended based on microbiome data, explicitly note this — it may suggest the failure was not microbiome-related.
-Include at least 3 limitations/caveats. Always include:
+Include at least 5 limitations/caveats. Always include the following five:
 
 "Sequence homology does not guarantee functional equivalence. Bacterial orthologs may not metabolize drugs identically to human enzymes."
 "Microbiome composition is dynamic and can change with diet, antibiotics, and other factors. These predictions reflect the profile at time of sampling."
 "This analysis does not account for human pharmacogenomic variation (e.g., CYP2D6 poor/ultrarapid metabolizer status). Combining microbiome and pharmacogenomic data would improve prediction accuracy."
+"Most bacterial drug metabolism in the gut occurs via non-CYP enzyme families (oxidoreductases, nitroreductases, hydrolases) rather than direct CYP450 orthologs. The mechanism of action for individual drug-bacterium pairs in this pipeline has not been individually experimentally validated."
+"No prospective clinical trial has yet demonstrated that microbiome-guided psychiatric prescribing improves patient outcomes. This framework defines what such a trial would test; it is not itself the trial."
 
 
 

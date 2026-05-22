@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 
 _BASE_DIR = Path(__file__).resolve().parent
 _AGENTS_DIR = _BASE_DIR / "agents"
-_MODEL_NAME = "claude-sonnet-4-20250514"
+_MODEL_NAME = "claude-sonnet-4-6"
 
 
 def _configure_client() -> Anthropic:
@@ -129,9 +129,13 @@ def _call_agent(client: Anthropic, system_instruction: str, user_message: str) -
 
     Returns the parsed dict.
     """
+    # max_tokens=16384: Agent 2 (Ortholog Hunter) under the revised KB emits
+    # large structured outputs (one record per drug × multiple match types).
+    # The previous 8192 limit was hit mid-stream, causing the truncated JSON
+    # to fail _parse_json_safe.
     response = client.messages.create(
         model=_MODEL_NAME,
-        max_tokens=8192,
+        max_tokens=16384,
         system=system_instruction,
         messages=[{"role": "user", "content": user_message}],
     )
@@ -150,7 +154,7 @@ def _call_agent(client: Anthropic, system_instruction: str, user_message: str) -
     )
     response = client.messages.create(
         model=_MODEL_NAME,
-        max_tokens=4096,
+        max_tokens=16384,
         system=system_instruction,
         messages=[{"role": "user", "content": retry_message}],
     )

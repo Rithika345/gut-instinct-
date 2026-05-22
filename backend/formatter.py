@@ -15,26 +15,38 @@ import re
 logger = logging.getLogger(__name__)
 
 
-# --- Known GUS producers and CYP orthologs from Agent 2 knowledge base ---
-# These are used as fallbacks if Agent 2 output parsing fails.
+# --- Known GUS producers and drug-metabolizing enzyme markers from Agent 2 KB ---
+# Fallbacks if Agent 2 output parsing fails. CONFIRMED drug-reactivating GUS
+# producers only (E. coli, B. fragilis, R. gnavus per the revised May 22 KB).
+# E. faecalis was removed: its UniProt-annotated activity is β-galactosidase,
+# not β-glucuronidase, and the prior Tier 1 GUS-producer claim was a
+# misattribution.
 _KNOWN_GUS = {
-    "Bacteroides fragilis", "Bacteroides thetaiotaomicron", "Bacteroides vulgatus",
-    "Clostridium scindens", "Clostridium bolteae", "Enterococcus faecalis",
-    "Ruminococcus gnavus", "Escherichia coli", "Klebsiella pneumoniae",
+    "Escherichia coli",
+    "Bacteroides fragilis",
+    "Ruminococcus gnavus",
+    # Other taxa with putative GUS but not validated for drug-glucuronide
+    # reactivation are excluded from this set; Agent 2 may still surface them
+    # at Tier 3 if its output explicitly includes them.
 }
 
+# Enzyme marker badge per taxon. CYP labels appear only for organisms with
+# validated CYP-family enzymes. E. coli, B. fragilis, and E. faecalis no
+# longer carry CYP labels — their drug-metabolizing activity is via non-CYP
+# families (oxidoreductases, nitroreductases, hydrolases, tyrosine
+# decarboxylase). E. lenta uses Cgr2 (cardiac glycoside reductase, not CYP).
 _KNOWN_CYP = {
-    "Bacteroides fragilis":         "CYP2D6",
+    # E. coli       — none (non-CYP enzymes; see Zimmermann 2019)
+    # B. fragilis   — none (non-CYP enzymes)
     "Bacteroides thetaiotaomicron": "CYP2C19",
     "Bacteroides vulgatus":         "CYP3A4",
     "Clostridium scindens":         "CYP3A4",
     "Clostridium bolteae":          "CYP2D6",
-    "Enterococcus faecalis":        "CYP2D6",
+    # E. faecalis   — none (tyrosine decarboxylase is its hallmark, not CYP)
     "Ruminococcus gnavus":          None,
-    "Escherichia coli":             "CYP2D6/2C19",
     "Klebsiella pneumoniae":        "CYP3A4",
     "Pseudomonas aeruginosa":       "CYP2D6",
-    "Eggerthella lenta":            "CYP2D6",
+    "Eggerthella lenta":            "Cgr2",  # NOT a CYP — flavin-dependent reductase
     "Prevotella copri":             "CYP2C19",
     "Lactobacillus rhamnosus":      "CYP2C19",
 }
@@ -127,14 +139,23 @@ def format_for_frontend(
         name = ds.get("drug_name", "")
         score = ds.get("metabolic_interference_score", 0)
         components = ds.get("score_components", {})
-        ortho = components.get("ortholog_degradation_risk", 0)
+        # Agent 3 emits enzymatic_degradation_risk under the revised KB
+        # (renamed from ortholog_degradation_risk on 2026-05-22 to drop
+        # CYP-specific language). Accept both for backwards-compat. We keep
+        # the output key here as `ortho` so the frontend chart and the
+        # demo-data.js fallback stay on the same schema; the user-visible
+        # label is updated to "Enzymatic degradation" in results.jsx.
+        enzymatic = components.get(
+            "enzymatic_degradation_risk",
+            components.get("ortholog_degradation_risk", 0),
+        )
         gus_risk = components.get("enterohepatic_reactivation_risk", 0)
 
         drug_scores.append({
             "name": name,
             "score": round(score, 2),
             "components": {
-                "ortho": round(ortho, 2),
+                "ortho": round(enzymatic, 2),
                 "gus": round(gus_risk, 2),
             },
         })

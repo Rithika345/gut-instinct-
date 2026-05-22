@@ -2,3 +2,29 @@
 __pycache__/
 node_modules/
 .venv/
+
+# macOS finder noise
+.DS_Store
+
+# Structural module: cached external structures (downloaded from RCSB / AlphaFold)
+# and TM-align intermediate outputs. The authoritative artifacts kept under git
+# are: structural_manifest.json, the three plan-mandated superposed PDBs, and
+# the C++ source for TM-align.
+backend/structural/cache/rcsb_*.pdb
+backend/structural/cache/af_*.pdb
+backend/structural/cache/superposed/*.pml
+backend/structural/cache/superposed/*_atm
+backend/structural/cache/superposed/*_atm_lig
+backend/structural/cache/superposed/*_all
+backend/structural/cache/superposed/*_all_atm_lig
+# Old human-vs-bacterial outputs (off-narrative under revised plan)
+backend/structural/cache/superposed/human_*
+backend/structural/cache/superposed/ecoli_xtal_vs_ecoli_af*
+backend/structural/cache/superposed/ecoli_xtal_vs_bfrag_af*
+backend/structural/cache/superposed/ecoli_xtal_vs_rgnav_af.*
+backend/structural/cache/superposed/bfrag_vs_rgnav*
+backend/structural/cache/gus_first_run_manifest.json
+# The compiled TM-align binary is platform-specific (built fresh on each machine)
+backend/structural/bin/TMalign
+# Live pipeline output captures (per-run artifacts, not source)
+backend/structural/cache/runs/

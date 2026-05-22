@@ -40,8 +40,8 @@ You MUST respond with ONLY valid JSON. No markdown, no explanation, no preamble.
 "drug_name": "string",
 "metabolic_interference_score": "number 0-1 — higher = more interference predicted",
 "score_components": {
-"ortholog_degradation_risk": "number 0-1 — risk of gut bacteria degrading the drug before absorption",
-"enterohepatic_reactivation_risk": "number 0-1 — risk of beta-glucuronidase reactivating excreted drug",
+"ortholog_degradation_risk": "number 0-1 — risk of gut bacteria enzymatically degrading the drug before systemic absorption. Field name retained for backwards compatibility but the mechanism is now labelled 'Enzymatic degradation' in the user-facing display. Includes ANY bacterial drug-metabolizing enzyme ortholog: oxidoreductases, nitroreductases, azoreductases, hydrolases, reductases. NOT limited to CYP450 orthologs (most gut bacterial drug metabolism occurs via non-CYP pathways per Zimmermann et al. 2019).",
+"enterohepatic_reactivation_risk": "number 0-1 — risk of confirmed β-glucuronidase producers (E. coli, B. fragilis, R. gnavus) reactivating excreted drug-glucuronide via deconjugation. R. gnavus GUS is structurally present but processes drug-glucuronide substrates less efficiently than E. coli GUS (Biernat et al. 2019); apply a 0.5× efficiency factor for R. gnavus contribution.",
 "metabolic_pathway_redundancy": "number 0-1 — how many alternative pathways exist if one is compromised",
 "active_metabolite_buffer": "number 0-1 — whether an active metabolite provides efficacy backup"
 },
@@ -58,21 +58,22 @@ You MUST respond with ONLY valid JSON. No markdown, no explanation, no preamble.
 }
 SCORING METHODOLOGY
 Calculate the metabolic_interference_score (0 to 1, where 0 = no predicted interference, 1 = severe predicted interference) using these components:
-1. Ortholog Degradation Risk (0-1)
-For each drug, sum the interference from all ortholog matches:
+1. Enzymatic Degradation Risk (0-1) — formerly "CYP ortholog degradation"; renamed because most gut bacterial drug metabolism occurs via non-CYP enzymes (Zimmermann et al. 2019). This score covers any bacterial drug-metabolizing enzyme ortholog acting on the drug before systemic absorption.
+For each drug, sum the interference from all enzyme ortholog matches (CYP or non-CYP):
 
 Per match: (evidence_tier_weight) × (abundance_factor)
 Evidence tier weights: Tier 1 = 1.0, Tier 2 = 0.5, Tier 3 = 0.2
 Abundance factor: abundance_pct / 20 (capped at 1.0, so 20%+ abundance = maximum factor)
 Sum all matches, cap at 1.0
-If a drug's PRIMARY metabolizing enzyme has a Tier 1 ortholog match in a bacterium at >5% abundance, this alone should score ≥0.5
+A Tier 1 ortholog match (specific drug-microbe pair experimentally tested) at >5% abundance should score ≥0.5 on this component alone. Tier 2 matches (enzyme present, drug class is substrate, specific pair not tested) accumulate more gradually.
 
 2. Enterohepatic Reactivation Risk (0-1)
 
 0.0 if drug glucuronidation = false
-If glucuronidation = true: sum (beta_glucuronidase_abundance × evidence_tier_weight) for all GUS-producing taxa
-If glucuronidation is a MAJOR pathway (like Venlafaxine ODV): multiply by 1.5, cap at 1.0
-Tier 1 GUS producer at >5% abundance = minimum 0.4 risk
+If glucuronidation = true: sum (beta_glucuronidase_abundance × evidence_tier_weight × efficiency_factor) over CONFIRMED GUS producers only (E. coli, B. fragilis, R. gnavus). DO NOT include E. faecalis — it is not a confirmed drug-reactivating GUS producer.
+efficiency_factor: 1.0 for E. coli and B. fragilis; 0.5 for R. gnavus (its L1-loop GUS processes drug-glucuronides less efficiently per Biernat et al. 2019, Sci Rep).
+If glucuronidation is a MAJOR pathway (e.g. Venlafaxine ODV): multiply by 1.5, cap at 1.0
+Tier 1 GUS producer at >5% abundance for an antidepressant with major glucuronidation = minimum 0.4 risk
 
 3. Metabolic Pathway Redundancy (0-1) — PROTECTIVE factor
 
