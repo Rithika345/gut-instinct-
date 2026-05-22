@@ -4,8 +4,8 @@ const MECHANISMS = [
   {
     id: 'enzymatic',
     title: 'Enzymatic Mimicry',
-    sub: 'CYP450 orthologs in gut bacteria',
-    body: 'Bacteria including E. coli, E. faecalis, and E. lenta carry genes encoding enzymes with confirmed sequence homology (35–45%) to human CYP2D6 and CYP2C19. These orthologs oxidize, reduce, or conjugate drugs in the gut lumen — partially degrading them before systemic absorption.',
+    sub: 'Drug-metabolizing enzymes in gut bacteria',
+    body: 'Gut bacteria carry oxidoreductases, nitroreductases, and hydrolases capable of metabolizing drugs in the gut lumen before systemic absorption. Zimmermann et al. (2019) screened 76 bacterial species against 271 drugs and found 176 were significantly metabolized — through non-CYP mechanisms distinct from human liver enzymes.',
     ref: 'Zimmermann et al. 2019, Nature · Wallace et al. 2010',
   },
   {
@@ -136,7 +136,7 @@ function Landing() {
           {[
             { n:'01', h:'Trial-and-error prescribing', b:'No validated biomarker predicts psychiatric drug response. Clinicians cycle empirically through medications at 4–8 week intervals — while patients experience adverse effects, discontinuation syndromes, and delayed remission.' },
             { n:'02', h:'Pharmacogenomics misses the picture', b:'CYP2D6 and CYP2C19 genotyping explains ~30% of response variability. The gut microbiome — with its own complement of drug-metabolizing enzymes — is absent from every major pharmacogenomic panel.' },
-            { n:'03', h:'Every oral drug passes through a microbial gauntlet', b:'Before reaching systemic circulation, oral drugs traverse a lumen teeming with bacteria. Resident microbes intercept, transform, and inactivate them using enzyme systems that mirror human CYP450 chemistry — at concentrations no current prescribing model accounts for.' },
+            { n:'03', h:'Every oral drug passes through a microbial gauntlet', b:'Before reaching systemic circulation, oral drugs traverse a lumen teeming with bacteria. Resident microbes intercept, transform, and inactivate them using their own drug-metabolizing enzymes — oxidoreductases, hydrolases, and reductases that operate through mechanisms distinct from human CYP450 enzymes, at concentrations no current prescribing model accounts for.' },
           ].map(p => (
             <div key={p.n} className="ps-item">
               <div className="ps-num">{p.n}</div>

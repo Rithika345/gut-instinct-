@@ -1,19 +1,11 @@
-// app.jsx — Gut Instinct main app shell
+// app.jsx — Gut Instinct (lilac, spacious, single-column)
 
-// ─── Backend URL ──────────────────────────────────────────────────────────────
-// After deploying to Railway, paste your Railway URL here (no trailing slash).
-// Example: 'https://gut-instinct-production.up.railway.app'
-// Leave as empty string to always use demo data.
-const BACKEND_URL = 'https://web-production-64fb7.up.railway.app';
-
+const BACKEND_URL = '';
 const { useState, useEffect, useRef } = React;
 
 // ─── Theme ────────────────────────────────────────────────────────────────────
 function useTheme() {
-  const [dark, setDark] = useState(() => {
-    const saved = localStorage.getItem('gi-theme');
-    return saved ? saved === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches;
-  });
+  const [dark, setDark] = useState(() => localStorage.getItem('gi-theme') === 'dark');
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
     localStorage.setItem('gi-theme', dark ? 'dark' : 'light');
@@ -21,118 +13,147 @@ function useTheme() {
   return [dark, setDark];
 }
 
-// ─── Nav ──────────────────────────────────────────────────────────────────────
-function Nav({ dark, setDark }) {
+// ─── Top bar ──────────────────────────────────────────────────────────────────
+function TopBar({ dark, setDark }) {
   return (
-    <nav className="nav">
-      <div className="nav-inner">
-        <div className="nav-logo">
-          <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-            <circle cx="14" cy="14" r="13" stroke="var(--accent)" strokeWidth="1.5"/>
-            <path d="M8 14 C8 10, 12 8, 14 12 C16 16, 20 14, 20 14" stroke="var(--accent)" strokeWidth="1.8" strokeLinecap="round" fill="none"/>
-            <circle cx="9" cy="17" r="1.5" fill="var(--accent)" opacity="0.7"/>
-            <circle cx="14" cy="19" r="1.5" fill="var(--accent)" opacity="0.5"/>
-            <circle cx="19" cy="17" r="1.5" fill="var(--accent)" opacity="0.7"/>
-          </svg>
-          <span className="nav-brand">Gut Instinct</span>
-        </div>
-        <div className="nav-actions">
-          <a href="#demo" className="nav-link">Try Demo</a>
-          <button className="theme-toggle" onClick={() => setDark(!dark)} aria-label="Toggle theme">
-            {dark ? (
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="3.5" stroke="currentColor" strokeWidth="1.4"/><line x1="8" y1="1" x2="8" y2="2.5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/><line x1="8" y1="13.5" x2="8" y2="15" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/><line x1="1" y1="8" x2="2.5" y2="8" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/><line x1="13.5" y1="8" x2="15" y2="8" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/><line x1="3.05" y1="3.05" x2="4.1" y2="4.1" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/><line x1="11.9" y1="11.9" x2="12.95" y2="12.95" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/><line x1="11.9" y1="4.1" x2="12.95" y2="3.05" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/><line x1="3.05" y1="12.95" x2="4.1" y2="11.9" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/></svg>
-            ) : (
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M13.5 10.5A6 6 0 0 1 5.5 2.5a6 6 0 1 0 8 8z" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/></svg>
-            )}
+    <div className="topbar">
+      <div className="topbar-inner">
+        <a href="#top" className="topbar-brand">
+          <span className="topbar-mark"></span>
+          Gut Instinct
+        </a>
+        <nav className="topbar-nav">
+          <a className="topbar-link" href="#about">About</a>
+          <a className="topbar-link" href="#cases">Cases</a>
+          <button className="topbar-toggle" onClick={() => setDark(!dark)}>
+            {dark ? 'Light' : 'Dim'}
           </button>
-        </div>
+        </nav>
       </div>
-    </nav>
-  );
+    </div>);
+
 }
 
 // ─── Hero ─────────────────────────────────────────────────────────────────────
 function Hero() {
   return (
-    <section className="hero">
-      <div className="hero-tag">Pharmacomicrobiomics · Clinical Decision Support</div>
-      <h1 className="hero-headline">Personalized psychiatry,<br/>grounded in the gut.</h1>
-      <p className="hero-sub">Gut Instinct maps a patient's microbiome against psychiatric drug pharmacokinetics — predicting how gut bacteria alter drug metabolism before the first prescription is written.</p>
-      <div className="hero-ctas">
-        <a href="#demo" className="btn-primary">Run a demo case</a>
-        <a href="#pipeline" className="btn-ghost">How it works</a>
+    <header className="hero" id="top">
+      <div className="hero-eyebrow">Pharmacomicrobiomics · Clinical Decision Support</div>
+      <h1 className="hero-title" style={{ fontFamily: "Spectral", color: "rgb(56, 1, 106)" }}>Gut <em>Instinct</em></h1>
+      <p className="hero-dek">
+        Reading a patient&rsquo;s microbiome against psychiatric pharmacokinetics &mdash;
+        predicting how gut bacteria will alter drug metabolism before the prescription is written.
+      </p>
+      <div className="hero-byline">
+        <span>Built by <strong>Rithika Krishna Perugupalli</strong> &amp; <strong>Aparna Ganapathi Basavapatna</strong></span>
+        <span className="sep">·</span>
+        <span>UCDSOM MedXEngineering Hackathon</span>
+        <span className="sep">·</span>
+        <span>Not for clinical use</span>
       </div>
-      <div className="hero-disclaimer">Research prototype · Not for clinical use</div>
-    </section>
-  );
+    </header>);
+
 }
 
-// ─── Pipeline explainer ───────────────────────────────────────────────────────
+// ─── Method / About ───────────────────────────────────────────────────────────
 const AGENTS = [
-  { n: '01', name: 'Pharmacokinetic Mapper', desc: 'Extracts CYP enzyme pathways, protein binding, and glucuronidation flags for every candidate drug.' },
-  { n: '02', name: 'Ortholog Hunter', desc: "Matches human drug-metabolizing enzymes to bacterial orthologs present in the patient's microbiome." },
-  { n: '03', name: 'Graph Architect', desc: 'Builds a knowledge graph and computes a metabolic interference score (0–1) for each drug.' },
-  { n: '04', name: 'Clinical Interpreter', desc: 'Translates scores into tiered, clinician-readable recommendations with specific taxa and mechanisms cited.' },
-];
+{
+  n: '01',
+  name: 'Pharmacokinetic Mapper',
+  desc: 'Extracts CYP enzyme pathways, protein binding, and glucuronidation flags for every candidate drug.'
+},
+{
+  n: '02',
+  name: 'Microbiome Interaction Mapper',
+  desc: 'Identifies bacterial drug-metabolizing enzymes — oxidoreductases, hydrolases, β-glucuronidases — and maps them to each drug.'
+},
+{
+  n: '03',
+  name: 'Graph Architect',
+  desc: 'Builds a knowledge graph linking taxa to drugs and computes a metabolic interference score (0–100) for each.'
+},
+{
+  n: '04',
+  name: 'Clinical Interpreter',
+  desc: 'Translates scores into tiered, clinician-readable recommendations with the specific taxa and mechanisms cited.'
+}];
 
-function Pipeline() {
+
+function About() {
   return (
-    <section className="pipeline" id="pipeline">
-      <div className="section-label">4-Agent AI Pipeline</div>
-      <h2 className="section-title">From microbiome profile to clinical guidance</h2>
-      <p className="section-sub">Each agent is a Claude model with a curated system prompt and structured pharmacomicrobiomics knowledge base. Outputs chain forward — each agent builds on the last.</p>
-      <div className="agents-row">
-        {AGENTS.map((a, i) => (
-          <React.Fragment key={a.n}>
-            <div className="agent-card">
-              <div className="agent-num">{a.n}</div>
-              <div className="agent-name">{a.name}</div>
-              <div className="agent-desc">{a.desc}</div>
-            </div>
-            {i < AGENTS.length - 1 && <div className="agent-arrow">→</div>}
-          </React.Fragment>
-        ))}
+    <section className="section" id="about">
+      <div className="section-head">
+        <div className="section-eyebrow">How it works</div>
+        <h2 className="section-title">A four-agent pipeline, from microbiome profile to clinical guidance.</h2>
+        <p className="section-lede">
+          Each agent is a Claude model with a curated system prompt and a structured pharmacomicrobiomics knowledge base. Outputs chain forward.
+        </p>
       </div>
-    </section>
-  );
+
+      <div className="prose">
+        <p>
+          Microbial metabolism is the unmeasured variable in psychiatric prescribing. The gut harbours β-glucuronidases that can reactivate conjugated drug metabolites, oxidoreductases that degrade serotonergic agents before first-pass metabolism finishes, and pathway redundancies that quietly absorb half the intended dose. None of this appears on a CYP genotype panel.
+        </p>
+        <p>
+          Gut Instinct reads a 16S abundance profile against a candidate drug list and predicts where microbial pharmacokinetics will diverge from the textbook. Every score is traceable back to the taxa, enzymes, and mechanisms responsible for the call.
+        </p>
+      </div>
+
+      <div className="pipeline">
+        {AGENTS.map((a) =>
+        <div key={a.n} className="pipeline-step">
+            <div className="pipeline-num">Agent {a.n}</div>
+            <div className="pipeline-name">{a.name}</div>
+            <div className="pipeline-desc">{a.desc}</div>
+          </div>
+        )}
+      </div>
+    </section>);
+
 }
 
 // ─── Pipeline progress ────────────────────────────────────────────────────────
 const AGENT_LABELS = [
-  'Pharmacokinetic Mapper',
-  'Ortholog Hunter',
-  'Graph Architect',
-  'Clinical Interpreter',
-];
+'Pharmacokinetic Mapper',
+'Microbiome Interaction Mapper',
+'Graph Architect',
+'Clinical Interpreter'];
+
 
 function PipelineProgress({ step }) {
+  const stageText = step >= 4 ? 'Complete' : step >= 0 ? `Step ${step + 1} of 4` : 'Idle';
   return (
-    <div className="pipeline-progress">
-      {AGENT_LABELS.map((label, i) => {
-        const done = i < step, active = i === step;
-        return (
-          <div key={i} className={`pp-step ${done ? 'pp-done' : active ? 'pp-active' : 'pp-waiting'}`}>
-            <div className="pp-dot">
-              {done ? (
-                <svg width="12" height="12" viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3" stroke="currentColor" strokeWidth="1.8" fill="none" strokeLinecap="round" strokeLinejoin="round"/></svg>
-              ) : active ? <div className="pp-spinner"/> : null}
-            </div>
-            <div className="pp-label">Agent {i + 1} · {label}</div>
-          </div>
-        );
-      })}
-    </div>
-  );
+    <div className="progress">
+      <div className="progress-head">
+        <span className="progress-title">Running pipeline</span>
+        <span className="progress-stage">{stageText}</span>
+      </div>
+      <div className="progress-steps">
+        {AGENT_LABELS.map((label, i) => {
+          const done = i < step,active = i === step;
+          const cls = done ? 'progress-step--done' : active ? 'progress-step--active' : '';
+          return (
+            <div key={i} className={`progress-step ${cls}`}>
+              <div className="progress-num">
+                {done ? '✓ ' : ''}Agent {String(i + 1).padStart(2, '0')}
+              </div>
+              <div className="progress-label">{label}</div>
+            </div>);
+
+        })}
+      </div>
+    </div>);
+
 }
 
-// ─── Demo section ─────────────────────────────────────────────────────────────
-function Demo() {
+// ─── Cases ────────────────────────────────────────────────────────────────────
+function Cases() {
   const [selected, setSelected] = useState(null);
-  const [running, setRunning]   = useState(false);
-  const [step, setStep]         = useState(-1);
-  const [results, setResults]   = useState(null);
-  const [isLive, setIsLive]     = useState(false);
-  const [error, setError]       = useState(null);
+  const [running, setRunning] = useState(false);
+  const [step, setStep] = useState(-1);
+  const [results, setResults] = useState(null);
+  const [isLive, setIsLive] = useState(false);
+  const [error, setError] = useState(null);
   const resultsRef = useRef(null);
 
   async function runCase(caseObj) {
@@ -143,49 +164,43 @@ function Demo() {
     setIsLive(false);
     setStep(0);
 
-    // Try real FastAPI backend (90 s timeout — 4 Claude API calls + potential cold start)
     let apiResult = null;
     if (BACKEND_URL) {
       try {
         const res = await Promise.race([
-          fetch(`${BACKEND_URL}/analyze`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(caseObj.request),
-          }),
-          new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), 9000000)),
-        ]);
-        if (res.ok) { apiResult = await res.json(); setIsLive(true); }
+        fetch(`${BACKEND_URL}/analyze`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(caseObj.request)
+        }),
+        new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), 90000))]
+        );
+        if (res.ok) {apiResult = await res.json();setIsLive(true);}
       } catch {}
     }
 
-    // Animate 4 agent steps
-    const stepDelay = apiResult ? 180 : 750 + Math.random() * 350;
+    const stepDelay = apiResult ? 220 : 750 + Math.random() * 300;
     for (let i = 0; i < 4; i++) {
       setStep(i);
-      await new Promise(r => setTimeout(r, stepDelay));
+      await new Promise((r) => setTimeout(r, stepDelay));
     }
     setStep(4);
-    await new Promise(r => setTimeout(r, 280));
+    await new Promise((r) => setTimeout(r, 260));
 
-    // Merge API result with demo data — use live data when the backend provides it
     const base = DEMO_RESULTS[caseObj.id];
     let merged;
     if (apiResult && apiResult.taxa && apiResult.drug_scores && apiResult.graph) {
-      // Full live response — use everything from the backend
       merged = apiResult;
     } else if (apiResult) {
-      // Partial live response — fill gaps with demo data
       merged = {
         ...base,
         ...apiResult,
         taxa: apiResult.taxa || base.taxa,
         drug_scores: apiResult.drug_scores || base.drug_scores,
         graph: apiResult.graph || base.graph,
-        recommendation: apiResult.recommendation || base.recommendation,
+        recommendation: apiResult.recommendation || base.recommendation
       };
     } else {
-      // No backend — use hardcoded demo data
       merged = base;
     }
 
@@ -194,70 +209,111 @@ function Demo() {
 
     setTimeout(() => {
       if (resultsRef.current) {
-        const top = resultsRef.current.getBoundingClientRect().top + window.scrollY - 80;
+        const top = resultsRef.current.getBoundingClientRect().top + window.scrollY - 30;
         window.scrollTo({ top, behavior: 'smooth' });
       }
-    }, 100);
+    }, 120);
   }
 
   return (
-    <section className="demo-section" id="demo">
-      <div className="section-label">Interactive Demo</div>
-      <h2 className="section-title">Run a patient case</h2>
-      <p className="section-sub">
-        Select a demo profile to run the full 4-agent pipeline. Results are generated by a live 4-agent AI pipeline — if the backend is unavailable, pre-validated demo data loads automatically so all visualizations work immediately.
-      </p>
+    <section className="section" id="cases">
+      <div className="section-head">
+        <div className="section-eyebrow">Try a demo case</div>
+        <h2 className="section-title">Select a patient profile to run.</h2>
+        <p className="section-lede">
+          Four pre-validated scenarios. Clicking a case runs the full four-agent pipeline and renders a tiered drug recommendation, a microbiome interaction graph, and structural evidence.
+        </p>
+      </div>
 
-      <div className="case-cards">
-        {DEMO_CASES.map(c => (
-          <button
-            key={c.id}
-            className={`case-card ${selected === c.id ? 'case-card--selected' : ''}`}
-            onClick={() => !running && runCase(c)}
-            disabled={running}
-          >
-            <div className="case-badge">{c.badge}</div>
-            <div className="case-label">{c.label}</div>
-            <div className="case-desc">{c.description}</div>
-            <div className="case-run-btn">{running && selected === c.id ? 'Running…' : 'Run Analysis →'}</div>
-          </button>
-        ))}
+      <div className="cases">
+        {DEMO_CASES.map((c, i) => {
+          const num = String(i + 1).padStart(2, '0');
+          const isSel = selected === c.id;
+          return (
+            <button
+              key={c.id}
+              className="case"
+              aria-pressed={isSel}
+              onClick={() => !running && runCase(c)}
+              disabled={running}>
+              
+              <div className="case-num">{num}</div>
+              <div className="case-body">
+                <div className="case-diag">{c.badge}</div>
+                <div className="case-desc">{c.description}</div>
+                <div className="case-meta">
+                  {c.request.prior_failures?.length > 0 &&
+                  <span className="tag tag--red">Prior failure: {c.request.prior_failures.join(', ')}</span>
+                  }
+                  {c.request.current_medications?.length > 0 &&
+                  <span className="tag tag--amber">Current: {c.request.current_medications.join(', ')}</span>
+                  }
+                  {!c.request.prior_failures?.length && !c.request.current_medications?.length &&
+                  <span className="tag">No prior treatment</span>
+                  }
+                </div>
+              </div>
+              <div className={`case-action ${running && isSel ? 'case-action--running' : ''}`}>
+                {running && isSel ?
+                <>Running pipeline<span className="case-action-arrow">…</span></> :
+
+                <>Run analysis<span className="case-action-arrow">→</span></>
+                }
+              </div>
+            </button>);
+
+        })}
       </div>
 
       {running && <PipelineProgress step={step} />}
       {error && <div className="error-msg">{error}</div>}
-      {results && !running && (
-        <div ref={resultsRef}>
+      {results && !running &&
+      <div ref={resultsRef}>
           <Results data={results} isLive={isLive} />
         </div>
-      )}
-    </section>
-  );
+      }
+    </section>);
+
 }
 
 // ─── Footer ───────────────────────────────────────────────────────────────────
 function Footer() {
   return (
     <footer className="footer">
-      <div className="footer-logo">Gut Instinct</div>
-      <div className="footer-note">A pharmacomicrobiomics research prototype by Rithika Krishna Perugupalli &amp; Aparna Ganapathi Basavapatna. Not validated for clinical use.</div>
-    </footer>
-  );
+      <div className="footer-mark">Gut Instinct</div>
+      <div className="footer-text">
+        A pharmacomicrobiomics research prototype by <strong>Rithika Krishna Perugupalli</strong> &amp; <strong>Aparna Ganapathi Basavapatna</strong>.
+        Built for the UCDSOM MedXEngineering Hackathon. Not validated for clinical decision-making.
+      </div>
+    </footer>);
+
 }
 
 // ─── Tweaks ───────────────────────────────────────────────────────────────────
 const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
-  "accentHue": 216,
-  "cardRadius": 12,
+  "lilacHue": 295,
+  "lilacIntensity": 0.014,
   "density": "comfortable"
-}/*EDITMODE-END*/;
+} /*EDITMODE-END*/;
 
-function Tweaks({ visible }) {
+function Tweaks({ visible, onClose }) {
   const [vals, setVals] = useState(TWEAK_DEFAULTS);
+  const firstRun = useRef(true);
   useEffect(() => {
-    document.documentElement.style.setProperty('--accent-hue', vals.accentHue);
-    document.documentElement.style.setProperty('--radius', vals.cardRadius + 'px');
-    document.documentElement.style.setProperty('--density-gap', vals.density === 'compact' ? '1rem' : vals.density === 'spacious' ? '2.5rem' : '1.75rem');
+    // Skip the initial run so the hand-tuned CSS defaults stay intact.
+    if (firstRun.current) {firstRun.current = false;return;}
+    const h = vals.lilacHue;
+    const c = vals.lilacIntensity;
+    document.documentElement.style.setProperty('--bg', `oklch(0.957 ${c} ${h})`);
+    document.documentElement.style.setProperty('--bg-deep', `oklch(0.93 ${c * 1.6} ${h})`);
+    document.documentElement.style.setProperty('--accent-wash', `oklch(0.92 ${c * 2.8} ${h})`);
+    document.documentElement.style.setProperty('--accent', `oklch(0.48 ${Math.max(c * 12, 0.12)} ${h})`);
+    document.documentElement.style.setProperty('--accent-2', `oklch(0.6 ${Math.max(c * 9, 0.09)} ${h})`);
+    document.documentElement.style.setProperty('--rule', `oklch(0.89 ${c * 1.8} ${h})`);
+    document.documentElement.style.setProperty('--rule-soft', `oklch(0.93 ${c * 1.2} ${h})`);
+    document.documentElement.style.fontSize =
+    vals.density === 'compact' ? '15.5px' :
+    vals.density === 'spacious' ? '18.5px' : '17px';
   }, [vals]);
   function update(k, v) {
     const next = { ...vals, [k]: v };
@@ -266,28 +322,40 @@ function Tweaks({ visible }) {
   }
   if (!visible) return null;
   return (
-    <div className="tweaks-panel">
-      <div className="tweaks-title">Tweaks</div>
-      <label className="tweak-row">
-        <span>Accent hue</span>
-        <input type="range" min="160" max="280" value={vals.accentHue} onChange={e => update('accentHue', +e.target.value)} />
-        <span className="tweak-val">{vals.accentHue}°</span>
-      </label>
-      <label className="tweak-row">
-        <span>Card radius</span>
-        <input type="range" min="4" max="24" value={vals.cardRadius} onChange={e => update('cardRadius', +e.target.value)} />
-        <span className="tweak-val">{vals.cardRadius}px</span>
-      </label>
-      <label className="tweak-row">
-        <span>Density</span>
-        <select value={vals.density} onChange={e => update('density', e.target.value)}>
-          <option value="compact">Compact</option>
-          <option value="comfortable">Comfortable</option>
-          <option value="spacious">Spacious</option>
-        </select>
-      </label>
-    </div>
-  );
+    <div className="tweaks">
+      <div className="tweaks-head">
+        <span className="tweaks-title">Tweaks</span>
+        <button className="tweaks-close" onClick={onClose} aria-label="Close">×</button>
+      </div>
+      <div className="tweaks-body">
+        <div className="tweak-row">
+          <div className="tweak-row-head">
+            <span>Lilac hue</span>
+            <span className="tweak-val">{vals.lilacHue}°</span>
+          </div>
+          <input type="range" min="260" max="330" value={vals.lilacHue} onChange={(e) => update('lilacHue', +e.target.value)} />
+        </div>
+        <div className="tweak-row">
+          <div className="tweak-row-head">
+            <span>Lilac intensity</span>
+            <span className="tweak-val">{vals.lilacIntensity.toFixed(3)}</span>
+          </div>
+          <input type="range" min="0.005" max="0.04" step="0.002" value={vals.lilacIntensity} onChange={(e) => update('lilacIntensity', +e.target.value)} />
+        </div>
+        <div className="tweak-row">
+          <div className="tweak-row-head">
+            <span>Density</span>
+            <span className="tweak-val">{vals.density}</span>
+          </div>
+          <select value={vals.density} onChange={(e) => update('density', e.target.value)}>
+            <option value="compact">Compact</option>
+            <option value="comfortable">Comfortable</option>
+            <option value="spacious">Spacious</option>
+          </select>
+        </div>
+      </div>
+    </div>);
+
 }
 
 // ─── App root ─────────────────────────────────────────────────────────────────
@@ -296,25 +364,32 @@ function App() {
   const [tweaksOpen, setTweaksOpen] = useState(false);
 
   useEffect(() => {
-    window.addEventListener('message', e => {
-      if (e.data?.type === '__activate_edit_mode')   setTweaksOpen(true);
+    const handler = (e) => {
+      if (e.data?.type === '__activate_edit_mode') setTweaksOpen(true);
       if (e.data?.type === '__deactivate_edit_mode') setTweaksOpen(false);
-    });
+    };
+    window.addEventListener('message', handler);
     window.parent.postMessage({ type: '__edit_mode_available' }, '*');
+    return () => window.removeEventListener('message', handler);
   }, []);
+
+  function closeTweaks() {
+    setTweaksOpen(false);
+    window.parent.postMessage({ type: '__edit_mode_dismissed' }, '*');
+  }
 
   return (
     <>
-      <Nav dark={dark} setDark={setDark} />
-      <main>
+      <TopBar dark={dark} setDark={setDark} />
+      <div className="page">
         <Hero />
-        <Pipeline />
-        <Demo />
-      </main>
-      <Footer />
-      <Tweaks visible={tweaksOpen} />
-    </>
-  );
+        <About />
+        <Cases />
+        <Footer />
+      </div>
+      <Tweaks visible={tweaksOpen} onClose={closeTweaks} />
+    </>);
+
 }
 
 ReactDOM.createRoot(document.getElementById('root')).render(<App />);

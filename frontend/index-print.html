@@ -2,452 +2,1455 @@
 <html lang="en" data-theme="light">
 <head>
   <meta charset="UTF-8"/>
-  <title>Gut Instinct — Analysis Report</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Gut Instinct — Pharmacomicrobiomics CDS</title>
+  <script>
+    (function(){
+      var t = localStorage.getItem('gi-theme');
+      if (!t) t = 'light';
+      document.documentElement.setAttribute('data-theme', t);
+    })();
+  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@200;300;400;500;600;700&family=Spectral:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500;1,600&display=swap" rel="stylesheet"/>
   <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
   <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
   <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
   <style>
-    /* ── Tokens ── */
+    /* ─────────────────────────────────────────────────────────────────────────
+       TOKENS
+       ───────────────────────────────────────────────────────────────────────── */
     :root {
-      --accent:     oklch(0.55 0.14 216);
-      --accent-muted: oklch(0.93 0.04 216);
-      --green:      oklch(0.52 0.14 148);
-      --amber:      oklch(0.62 0.14 72);
-      --red:        oklch(0.52 0.18 22);
-      --green-bg:   oklch(0.96 0.04 148);
-      --amber-bg:   oklch(0.97 0.04 72);
-      --red-bg:     oklch(0.96 0.05 22);
-      --bg:         #ffffff;
-      --surface:    #ffffff;
-      --surface2:   oklch(0.975 0.007 216);
-      --border:     oklch(0.91 0.02 216);
-      --text:       oklch(0.17 0.02 216);
-      --text2:      oklch(0.45 0.03 216);
-      --text3:      oklch(0.62 0.02 216);
+      --f-sans: 'Lexend', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+      --f-serif: 'Spectral', Georgia, 'Times New Roman', serif;
+      --f-display: var(--f-sans);
+
+      /* Bright, saturated palette for charts & legends */
+      --c-green:  #34A853;
+      --c-amber:  #F2A33B;
+      --c-red:    #E5453B;
+      --c-blue:   #2D7CE5;
+      --c-magenta:#C73AAE;
+      --c-teal:   #1FA89C;
+      --c-orange: #F3743A;
+
+      --r-sm: 10px;
+      --r-md: 16px;
+      --r-lg: 22px;
     }
-    /* ── Print ── */
-    @page { size: A4 portrait; margin: 14mm 16mm 18mm; }
-    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; box-sizing: border-box; margin: 0; padding: 0; }
-    html, body { background: #fff; font-family: 'DM Sans', sans-serif; color: var(--text); font-size: 10.5pt; line-height: 1.55; -webkit-font-smoothing: antialiased; }
 
-    /* ── Page breaks ── */
-    .page        { break-before: page; }
-    .avoid-break { break-inside: avoid; }
-
-    /* ── Cover ── */
-    .cover {
-      min-height: 96vh; display: flex; flex-direction: column; justify-content: center;
-      border-bottom: 2px solid var(--border); padding-bottom: 2rem;
+    [data-theme="light"] {
+      --bg:        #F8F4FB;        /* very pale lilac */
+      --bg-deep:   #F2ECF7;        /* slightly deeper lilac */
+      --surface:   #FFFFFF;
+      --surface-2: #FCFAFD;
+      --ink:       #1D1D1F;        /* primary — high contrast */
+      --ink-2:     #3C3C43;        /* secondary */
+      --ink-3:     #6E6E73;        /* tertiary */
+      --ink-4:     #AEAEB2;        /* muted */
+      --rule:      #E8DFF0;
+      --rule-soft: #F1ECF6;
+      --hairline:  rgba(60, 60, 67, 0.10);
+      --accent:    #6B4FBB;
+      --accent-2:  #8B70D4;
+      --accent-wash: #EFE9FA;
+      --green-bg:  #EAF6EC;
+      --amber-bg:  #FDF1DD;
+      --red-bg:    #FBE3E1;
+      --shadow-sm: 0 1px 2px rgba(28, 27, 44, 0.04);
+      --shadow-md: 0 4px 18px rgba(28, 27, 44, 0.06);
+      --shadow-lg: 0 12px 40px rgba(28, 27, 44, 0.08);
     }
-    .cover-tag {
-      font-size: 7.5pt; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
-      color: var(--accent); background: var(--accent-muted);
-      display: inline-block; padding: 0.3rem 0.75rem; border-radius: 100px; margin-bottom: 1.5rem;
+    [data-theme="dark"] {
+      --bg:        #1A1626;
+      --bg-deep:   #14101F;
+      --surface:   #221C32;
+      --surface-2: #1E1929;
+      --ink:       #F5F2FA;
+      --ink-2:     #C8C2D4;
+      --ink-3:     #8C859B;
+      --ink-4:     #585268;
+      --rule:      rgba(245, 242, 250, 0.10);
+      --rule-soft: rgba(245, 242, 250, 0.06);
+      --hairline:  rgba(245, 242, 250, 0.10);
+      --accent:    #B7A4F0;
+      --accent-2:  #9683D8;
+      --accent-wash: rgba(183, 164, 240, 0.12);
+      --green-bg:  rgba(52, 168, 83, 0.14);
+      --amber-bg:  rgba(242, 163, 59, 0.14);
+      --red-bg:    rgba(229, 69, 59, 0.14);
+      --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+      --shadow-md: 0 4px 18px rgba(0, 0, 0, 0.35);
+      --shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.45);
+      --c-green:  #4FBE7A;
+      --c-amber:  #F0A050;
+      --c-red:    #F0644E;
+      --c-blue:   #6B9DEC;
+      --c-magenta:#DC6FB7;
+      --c-teal:   #4ABAB0;
+      --c-orange: #FA8359;
     }
-    .cover-title { font-size: 34pt; font-weight: 300; letter-spacing: -0.03em; line-height: 1.1; color: var(--text); margin-bottom: 1rem; }
-    .cover-sub   { font-size: 11pt; color: var(--text2); max-width: 480px; margin-bottom: 2.5rem; font-weight: 300; }
-    .cover-meta  { display: flex; gap: 2rem; flex-wrap: wrap; }
-    .cover-meta-item label { font-size: 7pt; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text3); display: block; margin-bottom: 0.2rem; }
-    .cover-meta-item span  { font-size: 9pt; color: var(--text2); }
-    .cover-disclaimer { margin-top: auto; padding-top: 2rem; font-size: 7.5pt; color: var(--text3); border-top: 1px solid var(--border); }
 
-    /* ── Pipeline ── */
-    .pipeline-section { padding: 1.5rem 0; border-bottom: 1px solid var(--border); }
-    .section-label { font-size: 7pt; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.35rem; }
-    .section-title { font-size: 16pt; font-weight: 400; letter-spacing: -0.02em; color: var(--text); margin-bottom: 0.4rem; }
-    .section-sub   { font-size: 9pt; color: var(--text2); max-width: 480px; font-weight: 300; }
-    .agents-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.6rem; margin-top: 1rem; }
-    .agent-box { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 0.75rem; }
-    .agent-num  { font-family: 'DM Mono', monospace; font-size: 7pt; color: var(--accent); font-weight: 500; margin-bottom: 0.3rem; }
-    .agent-name { font-size: 8.5pt; font-weight: 600; color: var(--text); margin-bottom: 0.25rem; }
-    .agent-desc { font-size: 7.5pt; color: var(--text2); line-height: 1.45; }
+    /* ─────────────────────────────────────────────────────────────────────────
+       RESET
+       ───────────────────────────────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--f-sans);
+      font-weight: 400;
+      font-size: 16px;
+      line-height: 1.55;
+      background: var(--bg);
+      color: var(--ink);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      letter-spacing: 0.002em;
+      transition: background 0.25s, color 0.25s;
+    }
+    a {
+      color: var(--accent);
+      text-decoration: none;
+      transition: opacity 0.15s;
+    }
+    a:hover { opacity: 0.75; }
+    button { cursor: pointer; font: inherit; background: none; border: none; color: inherit; }
+    em, i { font-family: var(--f-serif); font-style: italic; font-weight: 400; color: inherit; }
+    strong { font-weight: 600; color: var(--ink); }
 
-    /* ── Patient header ── */
-    .patient-header { padding: 1.25rem 0 1rem; border-bottom: 1px solid var(--border); margin-bottom: 1rem; }
-    .patient-id { font-family: 'DM Mono', monospace; font-size: 7.5pt; color: var(--accent); font-weight: 500; margin-bottom: 0.3rem; }
-    .patient-summary { font-size: 9pt; color: var(--text2); line-height: 1.6; max-width: 600px; }
+    /* ─────────────────────────────────────────────────────────────────────────
+       PAGE FRAME
+       ───────────────────────────────────────────────────────────────────────── */
+    .page {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 0 32px;
+    }
 
-    /* ── Shared card ── */
-    .print-card { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; margin-bottom: 0.75rem; }
-    .card-title { font-size: 7pt; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text3); margin-bottom: 0.6rem; }
-    .chart-note { font-size: 7.5pt; color: var(--text3); margin-bottom: 0.75rem; font-style: italic; }
+    /* ─────────────────────────────────────────────────────────────────────────
+       TOP BAR — Apple-style sticky translucent
+       ───────────────────────────────────────────────────────────────────────── */
+    .topbar {
+      position: sticky; top: 0; z-index: 100;
+      background: color-mix(in srgb, var(--bg) 80%, transparent);
+      backdrop-filter: saturate(180%) blur(20px);
+      -webkit-backdrop-filter: saturate(180%) blur(20px);
+      border-bottom: 1px solid var(--hairline);
+      max-width: none;
+      margin: 0;
+      padding: 0;
+    }
+    .topbar-inner {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 12px 32px;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 16px;
+      height: 56px;
+    }
+    .topbar-brand {
+      display: flex; align-items: center; gap: 10px;
+      font-family: var(--f-serif);
+      font-style: italic;
+      font-size: 19px; font-weight: 400;
+      letter-spacing: -0.01em;
+      color: var(--ink);
+    }
+    .topbar-mark {
+      width: 22px; height: 22px;
+      background: var(--accent);
+      border-radius: 6px;
+      position: relative;
+    }
+    .topbar-mark::after {
+      content: ""; position: absolute;
+      inset: 5px;
+      background: var(--bg);
+      border-radius: 2px;
+    }
+    .topbar-nav { display: flex; align-items: center; gap: 4px; }
+    .topbar-link {
+      font-size: 14px; font-weight: 500;
+      color: var(--ink-2);
+      padding: 6px 12px;
+      border-radius: 8px;
+      transition: background 0.15s, color 0.15s;
+    }
+    .topbar-link:hover { background: var(--rule-soft); color: var(--ink); opacity: 1; }
+    .topbar-toggle {
+      font-size: 13.5px; font-weight: 500;
+      color: var(--ink-2);
+      padding: 6px 12px;
+      border-radius: 8px;
+      transition: background 0.15s, color 0.15s;
+    }
+    .topbar-toggle:hover { background: var(--rule-soft); color: var(--ink); }
 
-    /* ── Tier badge ── */
-    .tier-badge { display: inline-flex; align-items: center; font-size: 6.5pt; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; padding: 0.18rem 0.55rem; border-radius: 100px; }
-    .tier-green { color: var(--green); background: var(--green-bg); }
-    .tier-amber { color: var(--amber); background: var(--amber-bg); }
-    .tier-red   { color: var(--red);   background: var(--red-bg); }
+    /* ─────────────────────────────────────────────────────────────────────────
+       HERO / HEADER
+       ───────────────────────────────────────────────────────────────────────── */
+    .hero {
+      padding: 100px 0 80px;
+      text-align: center;
+    }
+    .hero-eyebrow {
+      font-size: 11px; font-weight: 500;
+      letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--ink-3);
+      margin-bottom: 22px;
+    }
+    .hero-title {
+      font-family: var(--f-sans);
+      font-weight: 300;
+      font-size: clamp(56px, 9vw, 104px);
+      letter-spacing: -0.035em;
+      line-height: 1;
+      color: var(--ink);
+      margin-bottom: 24px;
+    }
+    .hero-title em {
+      font-family: var(--f-serif);
+      font-style: italic;
+      font-weight: 300;
+      letter-spacing: -0.01em;
+      background: linear-gradient(135deg, var(--accent) 0%, #B086E5 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      padding-right: 0.04em;
+    }
+    .hero-dek {
+      font-family: var(--f-serif);
+      font-style: italic;
+      font-weight: 300;
+      font-size: clamp(20px, 2.2vw, 26px);
+      line-height: 1.4;
+      color: var(--ink-2);
+      max-width: 680px;
+      margin: 0 auto 40px;
+      letter-spacing: 0;
+      text-wrap: balance;
+    }
+    .hero-byline {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+      line-height: 1.7;
+    }
+    .hero-byline strong { color: var(--ink-2); font-weight: 500; letter-spacing: 0.14em; }
+    .hero-byline .sep { display: inline-block; padding: 0 8px; color: var(--ink-4); }
 
-    /* ── Drug scores ── */
-    .score-row { display: flex; align-items: center; gap: 0.5rem; padding: 0.45rem 0.6rem; background: #fff; border: 1px solid var(--border); border-radius: 6px; margin-bottom: 0.35rem; }
-    .score-rank { font-family: 'DM Mono', monospace; font-size: 7pt; color: var(--text3); min-width: 16px; }
-    .score-name { font-size: 8.5pt; font-weight: 500; color: var(--text); min-width: 90px; }
-    .score-track { flex: 1; height: 7px; background: var(--border); border-radius: 100px; overflow: hidden; display: flex; }
-    .score-seg-ortho { height: 100%; background: var(--accent); opacity: 0.82; }
-    .score-seg-gus   { height: 100%; background: var(--amber); opacity: 0.82; }
-    .score-num { font-family: 'DM Mono', monospace; font-size: 7.5pt; font-weight: 500; min-width: 38px; text-align: right; }
-    .score-legend { display: flex; gap: 1rem; margin-top: 0.5rem; }
-    .sl-item { display: flex; align-items: center; gap: 0.3rem; font-size: 7pt; color: var(--text3); }
-    .sl-dot { width: 8px; height: 8px; border-radius: 2px; }
+    /* ─────────────────────────────────────────────────────────────────────────
+       SECTION
+       ───────────────────────────────────────────────────────────────────────── */
+    .section {
+      padding: 80px 0;
+    }
+    .section + .section {
+      border-top: 1px solid var(--hairline);
+    }
+    .section-head {
+      margin-bottom: 48px;
+    }
+    .section-eyebrow {
+      font-size: 11px; font-weight: 500;
+      letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--ink-3);
+      margin-bottom: 16px;
+    }
+    .section-title {
+      font-weight: 300;
+      font-size: clamp(34px, 4.4vw, 50px);
+      letter-spacing: -0.025em;
+      line-height: 1.1;
+      color: var(--ink);
+      margin-bottom: 18px;
+      text-wrap: balance;
+    }
+    .section-title em {
+      font-family: var(--f-serif);
+      font-style: italic;
+      font-weight: 300;
+      color: var(--accent);
+      background: none;
+      -webkit-text-fill-color: var(--accent);
+    }
+    .section-lede {
+      font-family: var(--f-serif);
+      font-style: italic;
+      font-weight: 300;
+      font-size: 20px;
+      line-height: 1.5;
+      color: var(--ink-2);
+      max-width: 660px;
+      letter-spacing: 0;
+      text-wrap: pretty;
+    }
 
-    /* ── Taxa chart ── */
-    .phyla-legend { display: flex; flex-wrap: wrap; gap: 0.3rem; margin-bottom: 0.6rem; }
-    .phylum-chip { font-size: 6.5pt; font-weight: 500; padding: 0.15rem 0.5rem; border-radius: 100px; border: 1px solid; }
-    .taxon-row { display: flex; align-items: center; gap: 0.5rem; padding: 0.35rem 0.5rem; background: #fff; border: 1px solid var(--border); border-radius: 5px; margin-bottom: 0.3rem; }
-    .taxon-name { font-family: 'DM Mono', monospace; font-size: 7.5pt; font-style: italic; min-width: 180px; color: var(--text); }
-    .taxon-flags { display: flex; gap: 0.25rem; min-width: 90px; }
-    .taxon-flag { font-size: 6pt; font-weight: 700; padding: 0.1rem 0.35rem; border-radius: 3px; letter-spacing: 0.03em; }
-    .taxon-flag-gus { background: var(--amber-bg); color: var(--amber); }
-    .taxon-flag-cyp { background: var(--accent-muted); color: var(--accent); }
-    .taxon-bar-track { flex: 1; height: 6px; background: var(--border); border-radius: 100px; overflow: hidden; }
-    .taxon-bar-fill  { height: 100%; border-radius: 100px; }
-    .taxon-pct { font-family: 'DM Mono', monospace; font-size: 7pt; color: var(--text3); min-width: 32px; text-align: right; }
+    /* ─────────────────────────────────────────────────────────────────────────
+       ABSTRACT — calm single-column prose
+       ───────────────────────────────────────────────────────────────────────── */
+    .prose {
+      max-width: 720px;
+      font-size: 17px;
+      line-height: 1.65;
+      color: var(--ink-2);
+    }
+    .prose strong, .prose em { color: var(--ink); }
+    .prose p + p { margin-top: 18px; }
+    .prose p { text-wrap: pretty; }
 
-    /* ── Drug card ── */
-    .drug-card-print { border: 1px solid var(--border); border-radius: 7px; margin-bottom: 0.6rem; overflow: hidden; }
-    .drug-card-print--caution { border-color: oklch(0.52 0.18 22 / 0.35); }
-    .dcph { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; padding: 0.6rem 0.75rem; background: var(--surface2); }
-    .dcph-left  { display: flex; align-items: center; gap: 0.5rem; }
-    .dcph-right { display: flex; align-items: center; gap: 0.5rem; }
-    .drug-name-p { font-size: 9pt; font-weight: 600; color: var(--text); }
-    .score-bar-mini { display: flex; align-items: center; gap: 0.35rem; }
-    .sbt { width: 60px; height: 5px; background: var(--border); border-radius: 100px; overflow: hidden; }
-    .sbf { height: 100%; border-radius: 100px; }
-    .sbn { font-family: 'DM Mono', monospace; font-size: 7pt; font-weight: 500; }
-    .drug-one-liner-p { padding: 0.4rem 0.75rem; font-size: 7.5pt; color: var(--text2); background: #fff; border-top: 1px solid var(--border); }
-    .drug-details-p { padding: 0.6rem 0.75rem; background: #fff; border-top: 1px solid var(--border); }
-    .drug-exp-p { font-size: 7.5pt; color: var(--text2); line-height: 1.55; margin-bottom: 0.5rem; }
-    .detail-sub { font-size: 6.5pt; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; color: var(--text3); margin: 0.4rem 0 0.25rem; }
-    .interaction-row-p { display: flex; gap: 0.4rem; padding: 0.4rem 0.5rem; background: var(--surface2); border: 1px solid var(--border); border-radius: 5px; margin-bottom: 0.3rem; font-size: 7.5pt; }
-    .int-icon { color: var(--text3); flex-shrink: 0; }
-    .int-desc { color: var(--text); font-weight: 500; }
-    .int-impl { color: var(--text2); }
-    .int-taxa { color: var(--text3); font-style: italic; margin-top: 0.1rem; font-size: 7pt; }
-    .risk-flag-p { font-size: 7.5pt; color: var(--red); background: var(--red-bg); padding: 0.25rem 0.5rem; border-radius: 4px; margin-bottom: 0.25rem; }
-    .adj-p { font-size: 7.5pt; color: var(--text2); }
+    /* Pipeline cards — Apple style */
+    .pipeline {
+      margin-top: 48px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+    .pipeline-step {
+      padding: 24px 22px 26px;
+      background: var(--surface);
+      border: 1px solid var(--hairline);
+      border-radius: var(--r-md);
+      box-shadow: var(--shadow-sm);
+      transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    }
+    .pipeline-step:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+      border-color: var(--accent-2);
+    }
+    .pipeline-num {
+      font-size: 10.5px; font-weight: 500;
+      color: var(--ink-3);
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+    .pipeline-name {
+      font-size: 19px; font-weight: 400;
+      line-height: 1.2;
+      letter-spacing: -0.018em;
+      color: var(--ink);
+      margin-bottom: 8px;
+    }
+    .pipeline-desc {
+      font-size: 14px;
+      line-height: 1.55;
+      color: var(--ink-2);
+      text-wrap: pretty;
+    }
 
-    /* ── Network ── */
-    .network-container { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 0.75rem; }
-    .net-legend { display: flex; gap: 1rem; margin-top: 0.5rem; flex-wrap: wrap; }
-    .nl-item { display: flex; align-items: center; gap: 0.3rem; font-size: 7pt; color: var(--text2); }
-    .nl-line { width: 16px; height: 2px; border-radius: 1px; display: inline-block; }
+    /* ─────────────────────────────────────────────────────────────────────────
+       CASES — generous list
+       ───────────────────────────────────────────────────────────────────────── */
+    .cases {
+      display: flex; flex-direction: column;
+      gap: 12px;
+    }
+    .case {
+      display: grid;
+      grid-template-columns: 56px 1fr auto;
+      gap: 24px;
+      align-items: center;
+      padding: 24px 28px;
+      background: var(--surface);
+      border: 1px solid var(--hairline);
+      border-radius: var(--r-md);
+      box-shadow: var(--shadow-sm);
+      cursor: pointer;
+      transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+      text-align: left;
+      width: 100%;
+    }
+    .case:hover {
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-md);
+      border-color: var(--accent-2);
+    }
+    .case[aria-pressed="true"] {
+      border-color: var(--accent);
+      background: var(--accent-wash);
+      box-shadow: var(--shadow-md);
+    }
+    .case:disabled { cursor: wait; opacity: 0.55; transform: none; box-shadow: var(--shadow-sm); }
 
-    /* ── Caveats ── */
-    .caveat-row { display: flex; gap: 0.5rem; padding: 0.4rem 0; border-bottom: 1px solid var(--border); font-size: 7.5pt; color: var(--text2); }
-    .caveat-row:last-child { border-bottom: none; }
-    .caveat-num { font-family: 'DM Mono', monospace; font-size: 7pt; color: var(--text3); flex-shrink: 0; min-width: 20px; margin-top: 0.1rem; }
-    .disclaimer-p { font-size: 7pt; color: var(--text3); padding: 0.6rem; border: 1px solid var(--border); border-radius: 6px; background: var(--surface2); margin-top: 0.75rem; }
+    .case-num {
+      font-family: var(--f-serif);
+      font-style: italic;
+      font-size: 38px; font-weight: 300;
+      color: var(--accent);
+      line-height: 1;
+      letter-spacing: -0.01em;
+      text-align: center;
+    }
+    .case-body { display: flex; flex-direction: column; gap: 8px; }
+    .case-diag {
+      font-size: 22px; font-weight: 400;
+      line-height: 1.2;
+      color: var(--ink);
+      letter-spacing: -0.02em;
+    }
+    .case-desc {
+      font-size: 15px; line-height: 1.5;
+      color: var(--ink-2);
+      max-width: 580px;
+      text-wrap: pretty;
+    }
+    .case-meta {
+      display: flex; gap: 6px; flex-wrap: wrap;
+      margin-top: 6px;
+    }
+    .case-action {
+      font-size: 15px; font-weight: 500;
+      color: var(--accent);
+      display: inline-flex; align-items: center; gap: 8px;
+      white-space: nowrap;
+    }
+    .case-action-arrow { transition: transform 0.18s; display: inline-block; }
+    .case:hover .case-action-arrow { transform: translateX(4px); }
+    .case-action--running { color: var(--ink-3); }
+
+    /* ─────────────────────────────────────────────────────────────────────────
+       TAGS / BADGES (with bright color)
+       ───────────────────────────────────────────────────────────────────────── */
+    .tag {
+      display: inline-block;
+      font-family: var(--f-sans);
+      font-size: 12px; font-weight: 500;
+      letter-spacing: 0.01em;
+      padding: 3px 9px;
+      border: 1px solid var(--rule);
+      color: var(--ink-2);
+      background: var(--surface);
+    }
+    .tag {
+      display: inline-flex; align-items: center;
+      font-size: 11px; font-weight: 500;
+      letter-spacing: 0.04em;
+      padding: 3px 9px;
+      border-radius: 999px;
+      color: var(--ink-2);
+      background: var(--rule-soft);
+      line-height: 1.5;
+      border: none;
+    }
+    .tag--accent { color: var(--accent); background: var(--accent-wash); }
+    .tag--green  { color: var(--c-green); background: var(--green-bg); }
+    .tag--amber  { color: var(--c-amber); background: var(--amber-bg); }
+    .tag--red    { color: var(--c-red);   background: var(--red-bg); }
+
+    /* ─────────────────────────────────────────────────────────────────────────
+       PIPELINE PROGRESS
+       ───────────────────────────────────────────────────────────────────────── */
+    .progress {
+      margin: 24px 0 0;
+      padding: 24px 28px;
+      background: var(--surface);
+      border: 1px solid var(--hairline);
+      border-radius: var(--r-md);
+      box-shadow: var(--shadow-sm);
+    }
+    .progress-head {
+      display: flex; align-items: baseline; justify-content: space-between;
+      margin-bottom: 18px;
+    }
+    .progress-title {
+      font-size: 10.5px; font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+    }
+    .progress-stage {
+      font-family: var(--f-serif);
+      font-style: italic;
+      font-size: 16px; font-weight: 400;
+      color: var(--accent);
+      letter-spacing: 0;
+    }
+    .progress-steps {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+    .progress-step {
+      padding: 14px 14px;
+      background: var(--bg-deep);
+      border-radius: var(--r-sm);
+      transition: background 0.2s ease;
+    }
+    .progress-step--done    { background: var(--green-bg); }
+    .progress-step--active  { background: var(--accent-wash); }
+    .progress-num {
+      font-size: 10px; font-weight: 500;
+      letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--ink-3);
+      margin-bottom: 6px;
+    }
+    .progress-step--done .progress-num { color: var(--c-green); }
+    .progress-step--active .progress-num { color: var(--accent); }
+    .progress-label {
+      font-size: 14.5px; font-weight: 500; line-height: 1.3;
+      color: var(--ink-3);
+      letter-spacing: -0.005em;
+    }
+    .progress-step--done .progress-label, .progress-step--active .progress-label {
+      color: var(--ink);
+    }
+    .progress-step--active {
+      animation: pulse-bg 1.4s ease-in-out infinite;
+    }
+    @keyframes pulse-bg {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.72; }
+    }
+
+    /* ─────────────────────────────────────────────────────────────────────────
+       RESULTS SHELL
+       ───────────────────────────────────────────────────────────────────────── */
+    .results {
+      margin-top: 64px;
+      padding-top: 64px;
+      border-top: 1px solid var(--hairline);
+      animation: fade-up 0.5s ease both;
+    }
+    @keyframes fade-up { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+
+    .results-eyebrow {
+      font-size: 11px; font-weight: 500;
+      letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--ink-3);
+      margin-bottom: 14px;
+    }
+    .results-head {
+      display: flex; align-items: flex-start; justify-content: space-between;
+      gap: 24px;
+      margin-bottom: 20px;
+    }
+    .results-pid {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+      margin-bottom: 12px;
+    }
+    .results-pid strong { color: var(--accent); font-weight: 500; letter-spacing: 0.14em; }
+    .results-title {
+      font-weight: 300;
+      font-size: clamp(36px, 5vw, 56px);
+      letter-spacing: -0.03em;
+      line-height: 1.05;
+      color: var(--ink);
+      text-wrap: balance;
+    }
+    .results-source {
+      font-size: 10.5px; font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .source-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+    }
+    .results-source--live { color: var(--c-green); background: var(--green-bg); }
+    .results-source--live .source-dot { background: var(--c-green); animation: blink 1.6s ease-in-out infinite; }
+    .results-source--sim  { color: var(--accent); background: var(--accent-wash); }
+    .results-source--sim .source-dot { background: var(--accent); }
+    @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
+
+    .results-summary {
+      font-family: var(--f-serif);
+      font-style: italic;
+      font-weight: 300;
+      font-size: 22px;
+      line-height: 1.4;
+      color: var(--ink-2);
+      max-width: 760px;
+      letter-spacing: 0;
+      text-wrap: pretty;
+      margin-bottom: 40px;
+    }
+
+    /* ─────────────────────────────────────────────────────────────────────────
+       TABS
+       ───────────────────────────────────────────────────────────────────────── */
+    .tabs {
+      display: inline-flex; gap: 2px;
+      padding: 4px;
+      background: var(--bg-deep);
+      border-radius: 12px;
+      margin-bottom: 40px;
+      flex-wrap: wrap;
+      max-width: 100%;
+    }
+    .tab {
+      font-size: 14px; font-weight: 500;
+      padding: 8px 14px;
+      color: var(--ink-2);
+      border-radius: 8px;
+      white-space: nowrap;
+      transition: background 0.15s, color 0.15s, box-shadow 0.15s;
+      letter-spacing: -0.005em;
+    }
+    .tab:hover { color: var(--ink); }
+    .tab--active {
+      background: var(--surface);
+      color: var(--ink);
+      font-weight: 600;
+      box-shadow: 0 1px 2px rgba(28, 27, 44, 0.08);
+    }
+
+    /* ─────────────────────────────────────────────────────────────────────────
+       CLINICAL REPORT — single column, generous
+       ───────────────────────────────────────────────────────────────────────── */
+    .report { display: flex; flex-direction: column; gap: 56px; }
+
+    .panel-head {
+      font-size: 26px; font-weight: 300;
+      letter-spacing: -0.022em;
+      line-height: 1.1;
+      color: var(--ink);
+      margin-bottom: 8px;
+    }
+    .panel-head em {
+      font-family: var(--f-serif);
+      font-style: italic;
+      font-weight: 300;
+      color: var(--accent);
+    }
+    .panel-sub {
+      font-family: var(--f-serif);
+      font-style: italic;
+      font-weight: 300;
+      font-size: 16px;
+      color: var(--ink-3);
+      margin-bottom: 24px;
+    }
+
+    .legend {
+      display: flex; gap: 8px; align-items: center; flex-wrap: wrap;
+      margin-bottom: 24px;
+      font-size: 14px;
+      color: var(--ink-2);
+    }
+    .legend-note {
+      color: var(--ink-3); margin-left: 4px;
+      font-size: 14px;
+    }
+
+    /* ─────────────────────────────────────────────────────────────────────────
+       DRUG ENTRY
+       ───────────────────────────────────────────────────────────────────────── */
+    .drug {
+      background: var(--surface);
+      border: 1px solid var(--hairline);
+      border-radius: var(--r-md);
+      padding: 22px 24px;
+      margin-bottom: 12px;
+      box-shadow: var(--shadow-sm);
+      transition: box-shadow 0.18s;
+    }
+    .drug:hover { box-shadow: var(--shadow-md); }
+    .drug-head {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 24px;
+      align-items: center;
+      cursor: pointer;
+      width: 100%;
+      text-align: left;
+    }
+    .drug-left { display: flex; flex-direction: column; gap: 8px; }
+    .drug-name {
+      font-size: 24px; font-weight: 400;
+      letter-spacing: -0.022em;
+      line-height: 1.1;
+      color: var(--ink);
+    }
+    .drug-tier-row { display: flex; align-items: center; gap: 10px; }
+    .drug-right {
+      display: flex; flex-direction: column; align-items: flex-end; gap: 8px;
+    }
+    .drug-score-num {
+      font-family: var(--f-serif);
+      font-style: italic;
+      font-size: 36px; font-weight: 300;
+      letter-spacing: -0.015em;
+      line-height: 1;
+    }
+    .drug-score-num small {
+      font-size: 14px; font-weight: 500;
+      color: var(--ink-3);
+      letter-spacing: -0.01em;
+    }
+    .score-track {
+      width: 160px; height: 6px;
+      background: var(--rule-soft);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+    .score-fill {
+      height: 100%;
+      border-radius: 999px;
+      transition: width 0.6s ease;
+    }
+    .drug-toggle {
+      font-size: 14px; font-weight: 500;
+      color: var(--accent);
+      padding: 6px 14px;
+      border-radius: 999px;
+      background: var(--accent-wash);
+      margin-top: 16px;
+      transition: opacity 0.15s;
+    }
+    .drug-toggle:hover { opacity: 0.7; }
+
+    .drug-oneliner {
+      font-family: var(--f-serif);
+      font-style: italic;
+      font-weight: 300;
+      font-size: 18px; line-height: 1.5;
+      color: var(--ink-2);
+      margin-top: 14px;
+      max-width: 720px;
+      text-wrap: pretty;
+    }
+    .drug-details {
+      margin-top: 22px;
+      padding-top: 22px;
+      border-top: 1px solid var(--hairline);
+      animation: fade-up 0.3s ease;
+    }
+    .drug-explanation {
+      font-size: 16px; line-height: 1.6;
+      color: var(--ink);
+      margin-bottom: 24px;
+      text-wrap: pretty;
+    }
+    .drug-subhead {
+      font-size: 10.5px; font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+      margin: 24px 0 10px;
+    }
+    .drug-subhead:first-child { margin-top: 0; }
+    .interaction {
+      padding: 14px 16px;
+      background: var(--bg-deep);
+      border-radius: var(--r-sm);
+      margin-bottom: 8px;
+    }
+    .interaction-desc {
+      font-size: 15px; font-weight: 600;
+      color: var(--ink);
+      margin-bottom: 4px;
+      letter-spacing: -0.01em;
+    }
+    .interaction-implication {
+      font-size: 14.5px; line-height: 1.5;
+      color: var(--ink-2);
+    }
+    .interaction-implication::before {
+      content: "→ "; color: var(--accent); font-weight: 600;
+    }
+    .interaction-taxa {
+      font-size: 13px;
+      color: var(--ink-3);
+      margin-top: 6px;
+    }
+    .risk-flag {
+      font-size: 14.5px; line-height: 1.5;
+      color: var(--c-red);
+      padding: 12px 16px;
+      background: var(--red-bg);
+      border-radius: var(--r-sm);
+      margin-bottom: 8px;
+      font-weight: 500;
+    }
+    .risk-flag::before { content: "⚠︎  "; font-weight: 700; }
+    .clinical-guidance {
+      font-size: 15px; line-height: 1.55;
+      color: var(--ink);
+      padding: 14px 16px;
+      background: var(--accent-wash);
+      border-radius: var(--r-sm);
+    }
+
+    /* ─────────────────────────────────────────────────────────────────────────
+       MICROBIOME CONTEXT (single column)
+       ───────────────────────────────────────────────────────────────────────── */
+    .mb-summary {
+      font-family: var(--f-serif);
+      font-style: italic;
+      font-weight: 300;
+      font-size: 18px; line-height: 1.5;
+      color: var(--ink-2);
+      margin-bottom: 24px;
+      max-width: 760px;
+      text-wrap: pretty;
+    }
+    .mb-taxa {
+      display: flex; flex-direction: column;
+      gap: 8px;
+    }
+    .mb-taxon {
+      padding: 18px 22px;
+      background: var(--surface);
+      border: 1px solid var(--hairline);
+      border-radius: var(--r-sm);
+      box-shadow: var(--shadow-sm);
+    }
+    .mb-taxon-name {
+      font-family: var(--f-serif);
+      font-style: italic;
+      font-size: 19px; font-weight: 400;
+      color: var(--ink);
+      display: block;
+      margin-bottom: 4px;
+      letter-spacing: 0;
+    }
+    .mb-taxon-concern {
+      font-size: 15px; line-height: 1.5;
+      color: var(--ink-2);
+      display: block;
+    }
+    .mb-taxon-drugs {
+      font-size: 13.5px;
+      color: var(--accent);
+      margin-top: 8px;
+      display: block;
+      font-weight: 500;
+    }
+
+    /* ─────────────────────────────────────────────────────────────────────────
+       CAVEATS / DISCLAIMER
+       ───────────────────────────────────────────────────────────────────────── */
+    .caveat {
+      display: grid;
+      grid-template-columns: 32px 1fr;
+      gap: 12px;
+      padding: 14px 0;
+      border-top: 1px solid var(--hairline);
+      font-size: 14.5px; line-height: 1.55;
+      color: var(--ink-2);
+    }
+    .caveat:last-child { border-bottom: 1px solid var(--hairline); }
+    .caveat-num {
+      font-size: 14.5px; font-weight: 600;
+      color: var(--accent);
+      line-height: 1.55;
+    }
+    .disclaimer {
+      font-family: var(--f-serif);
+      font-style: italic;
+      font-weight: 300;
+      font-size: 15px; line-height: 1.55;
+      color: var(--ink-3);
+      padding: 20px 24px;
+      background: var(--bg-deep);
+      border-radius: var(--r-sm);
+      text-align: center;
+      max-width: 760px;
+      margin: 32px auto 0;
+      text-wrap: pretty;
+    }
+
+    /* ─────────────────────────────────────────────────────────────────────────
+       CHART SHARED
+       ───────────────────────────────────────────────────────────────────────── */
+    .chart-intro {
+      font-family: var(--f-serif);
+      font-style: italic;
+      font-weight: 300;
+      font-size: 17px; line-height: 1.55;
+      color: var(--ink-2);
+      max-width: 720px;
+      margin-bottom: 32px;
+      text-wrap: pretty;
+    }
+    .chart-intro em { font-style: italic; font-weight: 500; color: var(--ink); }
+
+    /* ─────────────────────────────────────────────────────────────────────────
+       SCORES CHART (bright colors)
+       ───────────────────────────────────────────────────────────────────────── */
+    .scores { display: flex; flex-direction: column; gap: 8px; }
+    .score-row {
+      display: grid;
+      grid-template-columns: 36px 200px 1fr 110px;
+      gap: 18px;
+      align-items: center;
+      padding: 16px 18px;
+      background: var(--surface);
+      border: 1px solid var(--hairline);
+      border-radius: var(--r-sm);
+      box-shadow: var(--shadow-sm);
+    }
+    .score-rank {
+      font-family: var(--f-serif);
+      font-style: italic;
+      font-size: 22px; font-weight: 300;
+      color: var(--accent);
+      letter-spacing: -0.01em;
+    }
+    .score-drug {
+      font-size: 18px; font-weight: 400;
+      color: var(--ink);
+      letter-spacing: -0.018em;
+    }
+    .score-stack {
+      height: 10px;
+      display: flex;
+      background: var(--rule-soft);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+    .score-seg-enz { background: var(--c-blue); }
+    .score-seg-gus { background: var(--c-amber); }
+    .score-end {
+      display: flex; align-items: center; gap: 12px;
+      justify-content: flex-end;
+    }
+    .score-end-num {
+      font-family: var(--f-serif);
+      font-style: italic;
+      font-size: 22px; font-weight: 300;
+      letter-spacing: -0.01em;
+    }
+    .score-legend {
+      margin-top: 24px;
+      display: flex; flex-wrap: wrap; gap: 24px; align-items: center;
+      font-size: 14px;
+      color: var(--ink-2);
+    }
+    .legend-swatch {
+      display: inline-flex; align-items: center; gap: 8px;
+    }
+    .legend-box {
+      width: 18px; height: 12px;
+      display: inline-block;
+    }
+    .score-legend-note {
+      flex-basis: 100%;
+      font-family: var(--f-serif); font-style: italic;
+      font-size: 14.5px;
+      color: var(--ink-3);
+    }
+
+    /* ─────────────────────────────────────────────────────────────────────────
+       TAXA CHART (bright phylum colors)
+       ───────────────────────────────────────────────────────────────────────── */
+    .taxa { display: flex; flex-direction: column; gap: 0; }
+    .phyla-legend {
+      display: flex; flex-wrap: wrap; gap: 8px 18px;
+      margin-bottom: 24px;
+      font-family: var(--f-sans); font-size: 14px;
+      color: var(--ink-2);
+    }
+    .phyla-legend-item { display: inline-flex; align-items: center; gap: 8px; }
+    .phyla-legend-dot {
+      width: 14px; height: 14px;
+      display: inline-block;
+    }
+    .taxon-row {
+      display: grid;
+      grid-template-columns: 280px 1fr 64px;
+    .taxa { display: flex; flex-direction: column; gap: 6px; }
+    .phyla-legend {
+      display: flex; flex-wrap: wrap; gap: 8px 18px;
+      margin-bottom: 24px;
+      font-size: 14px;
+      color: var(--ink-2);
+    }
+    .phyla-legend-item { display: inline-flex; align-items: center; gap: 8px; }
+    .phyla-legend-dot {
+      width: 12px; height: 12px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+    .taxon-row {
+      display: grid;
+      grid-template-columns: 260px 1fr 64px;
+      gap: 20px;
+      align-items: center;
+      padding: 14px 18px;
+      background: var(--surface);
+      border: 1px solid var(--hairline);
+      border-radius: var(--r-sm);
+      box-shadow: var(--shadow-sm);
+    }
+    .taxon-left {
+      display: flex; flex-direction: column; gap: 6px;
+    }
+    .taxon-name {
+      font-family: var(--f-serif);
+      font-style: italic;
+      font-size: 17px; font-weight: 400;
+      color: var(--ink);
+      letter-spacing: 0;
+    }
+    .taxon-meta {
+      display: flex; gap: 6px; flex-wrap: wrap;
+    }
+    .taxon-bar-track {
+      height: 10px;
+      background: var(--rule-soft);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+    .taxon-bar-fill {
+      height: 100%;
+      border-radius: 999px;
+      transition: width 0.5s ease;
+    }
+    .taxon-pct {
+      font-family: var(--f-serif);
+      font-style: italic;
+      font-size: 17px; font-weight: 400;
+      color: var(--ink-2);
+      text-align: right;
+      letter-spacing: 0;
+    }
+
+    /* ─────────────────────────────────────────────────────────────────────────
+       NETWORK GRAPH
+       ───────────────────────────────────────────────────────────────────────── */
+    .network-wrap { display: flex; flex-direction: column; gap: 16px; }
+    .network-svg-container {
+      padding: 24px 16px;
+      background: var(--surface);
+      border: 1px solid var(--hairline);
+      border-radius: var(--r-md);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+    }
+    .network-legend {
+      display: flex; flex-wrap: wrap; gap: 20px; align-items: center;
+      font-size: 14px;
+      color: var(--ink-2);
+    }
+
+    /* ─────────────────────────────────────────────────────────────────────────
+       STRUCTURAL EVIDENCE — NO COLOR BACKGROUND BEHIND PROTEIN
+       ───────────────────────────────────────────────────────────────────────── */
+    .struct-wrap { display: flex; flex-direction: column; gap: 18px; }
+    .struct-controls {
+      display: flex; gap: 14px; align-items: center; flex-wrap: wrap;
+      padding: 14px 18px;
+      background: var(--surface);
+      border: 1px solid var(--hairline);
+      border-radius: var(--r-sm);
+      box-shadow: var(--shadow-sm);
+    }
+    .struct-controls label {
+      font-size: 13px; font-weight: 600;
+      color: var(--ink-2);
+    }
+    .struct-select {
+      flex: 1; min-width: 320px;
+      background: var(--bg-deep);
+      border: 1px solid transparent;
+      border-radius: 8px;
+      padding: 9px 12px;
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--ink);
+      letter-spacing: -0.008em;
+      appearance: none;
+      -webkit-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 12 8' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236E6E73' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      background-size: 12px;
+      padding-right: 36px;
+      transition: background 0.15s;
+    }
+    .struct-select:hover { background-color: var(--rule); }
+    .struct-select:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+    /* The 3D protein viewer — NO surrounding card / background / border */
+    .struct-viewer {
+      position: relative; width: 100%; height: 500px;
+      background: transparent;
+      overflow: visible;
+    }
+    .struct-viewer-loading {
+      position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+      color: var(--ink-3); font-size: 15px;
+    }
+    /* 3Dmol internally sets a bg on a child canvas — keep it transparent */
+    .struct-viewer canvas { background: transparent !important; }
+
+    .struct-legend-row {
+      display: flex; flex-wrap: wrap; gap: 16px 32px;
+      padding: 16px 20px;
+      background: var(--surface);
+      border: 1px solid var(--hairline);
+      border-radius: var(--r-sm);
+      box-shadow: var(--shadow-sm);
+      font-size: 14.5px;
+    }
+    .struct-legend-item { display: flex; align-items: center; gap: 10px; }
+    .struct-legend-swatch { width: 16px; height: 16px; border-radius: 4px; display: inline-block; }
+    .struct-legend-item strong { font-weight: 600; color: var(--ink); }
+    .struct-legend-item span { color: var(--ink-3); }
+
+    .struct-metrics {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
+      background: transparent;
+      border: none;
+    }
+    .struct-metric {
+      padding: 16px 18px;
+      background: var(--surface);
+      border: 1px solid var(--hairline);
+      border-radius: var(--r-sm);
+      box-shadow: var(--shadow-sm);
+    }
+    .struct-metric-label {
+      font-size: 10.5px; font-weight: 500;
+      letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--ink-3);
+      margin-bottom: 10px;
+    }
+    .struct-metric-value {
+      font-family: var(--f-serif);
+      font-style: italic;
+      font-size: 30px; font-weight: 300;
+      letter-spacing: -0.015em;
+      color: var(--ink);
+      line-height: 1;
+    }
+    .struct-metric-value--green { color: var(--c-green); }
+    .struct-metric-value--amber { color: var(--c-amber); }
+    .struct-metric-value--red { color: var(--c-red); }
+    .verdict {
+      display: inline-block;
+      font-size: 10.5px; font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      padding: 5px 10px;
+      border-radius: 999px;
+      margin-top: 2px;
+    }
+    .verdict--match, .verdict--same { color: var(--c-green); background: var(--green-bg); }
+    .verdict--partial { color: var(--c-amber); background: var(--amber-bg); }
+    .verdict--none { color: var(--c-red); background: var(--red-bg); }
+
+    .struct-narrative {
+      padding: 18px 22px;
+      background: var(--accent-wash);
+      border-radius: var(--r-sm);
+      font-family: var(--f-serif);
+      font-style: italic;
+      font-weight: 400;
+      font-size: 17px; line-height: 1.55;
+      color: var(--ink);
+      text-wrap: pretty;
+    }
+    .struct-interp {
+      padding: 18px 22px;
+      background: var(--surface);
+      border: 1px solid var(--hairline);
+      border-radius: var(--r-sm);
+      box-shadow: var(--shadow-sm);
+      font-size: 15px; line-height: 1.55;
+      color: var(--ink-2);
+      text-wrap: pretty;
+    }
+    .struct-cite {
+      padding: 16px 20px;
+      font-family: var(--f-serif);
+      font-style: italic;
+      font-weight: 300;
+      font-size: 13.5px; line-height: 1.6;
+      color: var(--ink-3);
+    }
+    .struct-cite strong { font-style: normal; font-family: var(--f-sans); font-weight: 500; color: var(--ink-2); }
+
+    /* ─────────────────────────────────────────────────────────────────────────
+       RAW
+       ───────────────────────────────────────────────────────────────────────── */
+    .raw-wrap { display: flex; flex-direction: column; gap: 10px; }
+    .raw-row {
+      background: var(--surface);
+      border: 1px solid var(--hairline);
+      border-radius: var(--r-sm);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+    }
+    .raw-header {
+      width: 100%;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      gap: 16px;
+      padding: 18px 22px;
+      text-align: left;
+    }
+    .raw-name {
+      font-size: 17px; font-weight: 400;
+      color: var(--ink);
+      letter-spacing: -0.018em;
+    }
+    .raw-name small {
+      display: block;
+      font-size: 13px;
+      color: var(--ink-3);
+      font-weight: 400;
+      margin-top: 4px;
+      letter-spacing: 0;
+    }
+    .raw-toggle {
+      font-size: 13.5px; font-weight: 500;
+      color: var(--accent);
+      padding: 7px 14px;
+      border-radius: 999px;
+      background: var(--accent-wash);
+      transition: opacity 0.15s;
+    }
+    .raw-toggle:hover { opacity: 0.7; }
+    .raw-body {
+      padding: 18px 22px;
+      background: var(--bg-deep);
+      border-top: 1px solid var(--hairline);
+      font-family: ui-monospace, 'SF Mono', 'Menlo', Consolas, monospace;
+      font-size: 12.5px; line-height: 1.65;
+      color: var(--ink-2);
+      max-height: 460px;
+      overflow: auto;
+      white-space: pre;
+    }
+
+    /* ─────────────────────────────────────────────────────────────────────────
+       FOOTER
+       ───────────────────────────────────────────────────────────────────────── */
+    .footer {
+      margin-top: 80px;
+      padding: 48px 0 56px;
+      border-top: 1px solid var(--hairline);
+      text-align: center;
+    }
+    .footer-mark {
+      font-family: var(--f-serif);
+      font-style: italic;
+      font-size: 22px; font-weight: 300;
+      letter-spacing: -0.01em;
+      color: var(--ink);
+      margin-bottom: 10px;
+    }
+    .footer-text {
+      font-size: 13.5px;
+      color: var(--ink-3);
+      max-width: 540px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+    .footer-text strong { color: var(--ink-2); font-weight: 600; }
+
+    /* ─────────────────────────────────────────────────────────────────────────
+       TWEAKS PANEL
+       ───────────────────────────────────────────────────────────────────────── */
+    .tweaks {
+      position: fixed; bottom: 28px; right: 28px; z-index: 999;
+      background: color-mix(in srgb, var(--surface) 92%, transparent);
+      backdrop-filter: saturate(180%) blur(20px);
+      -webkit-backdrop-filter: saturate(180%) blur(20px);
+      border: 1px solid var(--hairline);
+      border-radius: var(--r-md);
+      box-shadow: var(--shadow-lg);
+      width: 300px;
+      animation: fade-up 0.3s ease;
+    }
+    .tweaks-head {
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--hairline);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .tweaks-title {
+      font-size: 10.5px; font-weight: 500;
+      color: var(--ink);
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+    }
+    .tweaks-close {
+      width: 24px; height: 24px;
+      border-radius: 999px;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--ink-3);
+      font-size: 18px;
+      transition: background 0.15s, color 0.15s;
+    }
+    .tweaks-close:hover { color: var(--ink); background: var(--rule-soft); }
+    .tweaks-body { padding: 16px 18px; display: flex; flex-direction: column; gap: 16px; }
+    .tweak-row { display: flex; flex-direction: column; gap: 8px; }
+    .tweak-row-head {
+      display: flex; justify-content: space-between; align-items: baseline;
+      font-size: 13px; font-weight: 500;
+      color: var(--ink-2);
+    }
+    .tweak-val {
+      font-size: 13px; font-weight: 600;
+      color: var(--accent);
+    }
+    .tweak-row input[type=range] {
+      width: 100%;
+      accent-color: var(--accent);
+    }
+    .tweak-row select {
+      width: 100%;
+      background: var(--bg-deep);
+      border: 1px solid transparent;
+      border-radius: 8px;
+      padding: 8px 12px;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--ink);
+      appearance: none;
+      -webkit-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 12 8' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236E6E73' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      background-size: 11px;
+      padding-right: 30px;
+    }
+    .tweak-row select:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+    /* ─────────────────────────────────────────────────────────────────────────
+       MISC
+       ───────────────────────────────────────────────────────────────────────── */
+    .error-msg {
+      padding: 14px 18px;
+      background: var(--red-bg);
+      color: var(--c-red);
+      border-radius: var(--r-sm);
+      font-size: 15px;
+      font-weight: 500;
+      margin-top: 20px;
+    }
+    .empty-state {
+      padding: 48px 24px;
+      text-align: center;
+      font-size: 15px;
+      color: var(--ink-3);
+      background: var(--surface);
+      border: 1px solid var(--hairline);
+      border-radius: var(--r-sm);
+    }
+
+    /* ─────────────────────────────────────────────────────────────────────────
+       RESPONSIVE
+       ───────────────────────────────────────────────────────────────────────── */
+    @media (max-width: 880px) {
+      .page { padding-left: 20px; padding-right: 20px; }
+      .topbar-inner { padding-left: 20px; padding-right: 20px; }
+      .pipeline { grid-template-columns: 1fr 1fr; }
+      .case { grid-template-columns: 56px 1fr; padding: 20px 22px; }
+      .case-action { grid-column: 1 / -1; padding-top: 4px; }
+      .case-num { font-size: 26px; }
+      .case-diag { font-size: 20px; }
+      .progress-steps { grid-template-columns: 1fr 1fr; }
+      .drug-head { grid-template-columns: 1fr; }
+      .drug-right { align-items: flex-start; flex-direction: row; gap: 16px; }
+      .score-row { grid-template-columns: 28px 1fr; grid-auto-rows: auto; }
+      .score-row .score-stack, .score-row .score-end { grid-column: 1 / -1; }
+      .taxon-row { grid-template-columns: 1fr; gap: 6px; }
+      .taxon-pct { text-align: left; }
+      .struct-metrics { grid-template-columns: 1fr 1fr; }
+      .struct-metric { border-right: none; border-bottom: none; }
+      .struct-metric:nth-last-child(-n+1) { border-bottom: none; }
+      .results-head { flex-direction: column; align-items: flex-start; }
+    }
+    @media (max-width: 540px) {
+      .pipeline { grid-template-columns: 1fr; }
+      .progress-steps { grid-template-columns: 1fr; }
+      .hero { padding: 40px 0 56px; }
+      .struct-metrics { grid-template-columns: 1fr; }
+      .struct-metric { border-right: none; }
+    }
+  
+    /* ───── PRINT ───── */
+    @media print {
+      @page { size: A4 portrait; margin: 1.2cm 1.4cm; }
+      :root, body {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      html, body { background: var(--bg) !important; }
+      .topbar {
+        position: static !important;
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+        border-bottom: 1px solid var(--rule) !important;
+        background: var(--bg) !important;
+      }
+      .topbar-nav .topbar-toggle, .tweaks { display: none !important; }
+      .page { max-width: none !important; padding: 0 !important; }
+      .hero { padding: 28px 0 32px !important; break-after: page; }
+      .section { padding: 32px 0 !important; break-inside: avoid-page; }
+      .section + .section { border-top: 1px solid var(--rule); }
+      .section-head { margin-bottom: 24px !important; }
+      .pipeline { margin-top: 28px !important; gap: 12px !important; }
+      .pipeline-step, .case, .progress, .drug, .mb-taxon, .taxon-row,
+      .score-row, .struct-metric, .struct-controls, .struct-legend-row,
+      .struct-narrative, .struct-interp, .network-svg-container, .raw-row {
+        box-shadow: none !important;
+        break-inside: avoid;
+      }
+      .case { padding: 18px 22px !important; }
+      .case-action-arrow { display: none; }
+      .case-action::after { content: ""; }
+      .footer { margin-top: 40px !important; padding: 24px 0 12px !important; break-before: avoid; }
+      /* prevent oversized hero from pushing everything down */
+      .hero-title { font-size: 72px !important; }
+      .section-title { font-size: 36px !important; }
+      /* Make sure gradients render */
+      .hero-title em {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      a { color: var(--ink) !important; }
+      /* Disable all transitions/animations in print */
+      *, *::before, *::after {
+        animation: none !important;
+        transition: none !important;
+      }
+    }
+
   </style>
 </head>
 <body>
   <div id="root"></div>
+  <script src="https://3Dmol.org/build/3Dmol-min.js"></script>
   <script src="demo-data.js"></script>
-  <script type="text/babel">
-    const PHYLUM_COLORS = {
-      'Proteobacteria': 'oklch(0.62 0.14 52)',
-      'Bacteroidetes':  'oklch(0.55 0.12 248)',
-      'Firmicutes':     'oklch(0.52 0.14 148)',
-      'Actinobacteria': 'oklch(0.55 0.13 308)',
-      'Verrucomicrobia':'oklch(0.52 0.12 198)',
-    };
-    const pc = p => PHYLUM_COLORS[p] || '#999';
-    const scoreColor = s => s < 0.35 ? 'var(--green)' : s < 0.6 ? 'var(--amber)' : 'var(--red)';
-    const tierFromScore = s => s < 0.35 ? 'Recommended' : s < 0.6 ? 'Consider' : 'Caution';
+  <script src="structures.js"></script>
+  <script type="text/babel" src="results.jsx"></script>
+  <script type="text/babel" src="app.jsx"></script>
 
-    function TierBadge({ tier }) {
-      const cls = tier === 'Recommended' ? 'tier-green' : tier === 'Consider' ? 'tier-amber' : 'tier-red';
-      return <span className={`tier-badge ${cls}`}>{tier}</span>;
-    }
-
-    // ── Drug Scores ──────────────────────────────────────────────────────────
-    function DrugScoresSection({ scores }) {
-      const sorted = [...scores].sort((a, b) => a.score - b.score);
-      return (
-        <div className="print-card avoid-break">
-          <div className="card-title">Agent 3 Output — Drug Interference Scores</div>
-          <div className="chart-note">Lower score = less predicted microbiome interference. Bars show CYP ortholog (blue) and GUS reactivation (amber) risk components.</div>
-          {sorted.map((d, i) => {
-            const op = d.components ? Math.round(d.components.ortho * 100) : 0;
-            const gp = d.components ? Math.round(d.components.gus * 100) : 0;
-            const tot = Math.round(d.score * 100);
-            return (
-              <div key={d.name} className="score-row">
-                <span className="score-rank">#{i+1}</span>
-                <span className="score-name">{d.name}</span>
-                <div className="score-track">
-                  <div className="score-seg-ortho" style={{ width: `${op}%` }}/>
-                  <div className="score-seg-gus" style={{ width: `${gp}%` }}/>
-                </div>
-                <span className="score-num" style={{ color: scoreColor(d.score) }}>{tot}/100</span>
-                <TierBadge tier={tierFromScore(d.score)} />
-              </div>
-            );
-          })}
-          <div className="score-legend">
-            <span className="sl-item"><span className="sl-dot" style={{background:'var(--accent)',opacity:0.85}}/>CYP ortholog degradation</span>
-            <span className="sl-item"><span className="sl-dot" style={{background:'var(--amber)',opacity:0.85}}/>β-Glucuronidase reactivation</span>
-          </div>
-        </div>
-      );
-    }
-
-    // ── Taxa Chart ───────────────────────────────────────────────────────────
-    function TaxaSection({ taxa }) {
-      const sorted = [...taxa].sort((a, b) => b.abundance - a.abundance);
-      const max = sorted[0].abundance;
-      const phylaSet = [...new Set(sorted.map(t => t.phylum))];
-      return (
-        <div className="print-card">
-          <div className="card-title">Agent 2 Input — Microbiome Profile</div>
-          <div className="chart-note">Relative abundances of gut taxa. GUS = β-glucuronidase producer. CYP tags = enzyme ortholog families present.</div>
-          <div className="phyla-legend">
-            {phylaSet.map(p => (
-              <span key={p} className="phylum-chip" style={{ color: pc(p), background: pc(p)+'1a', borderColor: pc(p)+'44' }}>{p}</span>
-            ))}
-          </div>
-          {sorted.map(t => (
-            <div key={t.name} className="taxon-row">
-              <span className="taxon-name">{t.name}</span>
-              <div className="taxon-flags">
-                {t.gus && <span className="taxon-flag taxon-flag-gus">GUS</span>}
-                {t.cyp && <span className="taxon-flag taxon-flag-cyp">{t.cyp}</span>}
-              </div>
-              <div className="taxon-bar-track">
-                <div className="taxon-bar-fill" style={{ width: `${(t.abundance/max)*100}%`, background: pc(t.phylum) }}/>
-              </div>
-              <span className="taxon-pct">{t.abundance.toFixed(1)}%</span>
-            </div>
-          ))}
-        </div>
-      );
-    }
-
-    // ── Interaction Network ──────────────────────────────────────────────────
-    function NetworkSection({ graph }) {
-      const W = 520, PAD_X = 20, PAD_TOP = 44, ROW_H = 42, NODE_R = 6;
-      const taxaX = 140, drugX = W - 140;
-      const tCount = graph.taxa_nodes.length, dCount = graph.drug_nodes.length;
-      const taxaH = (tCount-1)*ROW_H, drugH = (dCount-1)*ROW_H;
-      const H = Math.max(taxaH, drugH) + PAD_TOP + 48;
-      const taxaStartY = PAD_TOP + (H - PAD_TOP - 32 - taxaH)/2;
-      const drugStartY = PAD_TOP + (H - PAD_TOP - 32 - drugH)/2;
-      const tPos = graph.taxa_nodes.map((t,i) => ({...t, x:taxaX, y:taxaStartY+i*ROW_H}));
-      const dPos = graph.drug_nodes.map((d,i) => ({...d, x:drugX, y:drugStartY+i*ROW_H}));
-      const tById = Object.fromEntries(tPos.map(t=>[t.id,t]));
-      const dById = Object.fromEntries(dPos.map(d=>[d.id,d]));
-      const edgeColor = type => type === 'gus' ? 'var(--amber)' : 'var(--accent)';
-      return (
-        <div className="print-card avoid-break">
-          <div className="card-title">Agent 3 Output — Interaction Network</div>
-          <div className="chart-note">Blue = CYP enzyme ortholog · Amber = β-glucuronidase reactivation · Edge weight ∝ evidence × abundance</div>
-          <div className="network-container">
-            <svg width="100%" viewBox={`0 0 ${W} ${H}`} style={{fontFamily:'DM Sans,sans-serif'}}>
-              <text x={taxaX} y={20} textAnchor="middle" fontSize="8" fontWeight="600" fill="var(--text3)" letterSpacing="0.07em">MICROBIOME TAXA</text>
-              <text x={drugX} y={20} textAnchor="middle" fontSize="8" fontWeight="600" fill="var(--text3)" letterSpacing="0.07em">CANDIDATE DRUGS</text>
-              <line x1={taxaX-52} y1={27} x2={taxaX+52} y2={27} stroke="var(--border)" strokeWidth="0.8"/>
-              <line x1={drugX-52} y1={27} x2={drugX+52} y2={27} stroke="var(--border)" strokeWidth="0.8"/>
-              {graph.edges.map((e,i) => {
-                const t=tById[e.taxon], d=dById[e.drug];
-                if(!t||!d) return null;
-                const cpX=W/2;
-                return (
-                  <path key={i}
-                    d={`M${t.x+NODE_R} ${t.y} C${cpX} ${t.y} ${cpX} ${d.y} ${d.x-NODE_R} ${d.y}`}
-                    fill="none" stroke={edgeColor(e.type)} strokeWidth={e.strength*2.2} opacity={0.32}
-                  />
-                );
-              })}
-              {tPos.map(t => (
-                <g key={t.id}>
-                  <circle cx={t.x} cy={t.y} r={NODE_R+2+Math.min(t.abundance/5,4)} fill={pc(t.phylum)} opacity={0.14}/>
-                  <circle cx={t.x} cy={t.y} r={NODE_R} fill={pc(t.phylum)}/>
-                  <text x={t.x-NODE_R-6} y={t.y+3} textAnchor="end" fontSize="9.5" fill="var(--text2)" fontStyle="italic">{t.label}</text>
-                  <text x={t.x-NODE_R-6} y={t.y+13} textAnchor="end" fontSize="7.5" fill="var(--text3)">{t.abundance}%</text>
-                </g>
-              ))}
-              {dPos.map(d => {
-                const color = d.tier==='Recommended' ? 'var(--green)' : d.tier==='Consider' ? 'var(--amber)' : 'var(--red)';
-                return (
-                  <g key={d.id}>
-                    <circle cx={d.x} cy={d.y} r={NODE_R+2} fill={color} opacity={0.15}/>
-                    <circle cx={d.x} cy={d.y} r={NODE_R} fill={color}/>
-                    <text x={d.x+NODE_R+7} y={d.y+4} textAnchor="start" fontSize="10" fill="var(--text)" fontWeight="500">{d.label}</text>
-                  </g>
-                );
-              })}
-            </svg>
-          </div>
-          <div className="net-legend">
-            <span className="nl-item"><span className="nl-line" style={{background:'var(--accent)'}}/>CYP ortholog</span>
-            <span className="nl-item"><span className="nl-line" style={{background:'var(--amber)'}}/>β-Glucuronidase</span>
-          </div>
-        </div>
-      );
-    }
-
-    // ── Drug Cards ───────────────────────────────────────────────────────────
-    function PrintDrugCard({ drug }) {
-      const icons = { ortholog_degradation:'⬡', enterohepatic_reactivation:'↻', neurotransmitter_modulation:'⊕' };
-      const sc = scoreColor(drug.metabolic_interference_score);
-      const pct = Math.round(drug.metabolic_interference_score * 100);
-      return (
-        <div className={`drug-card-print avoid-break ${drug.tier==='Caution' ? 'drug-card-print--caution' : ''}`}>
-          <div className="dcph">
-            <div className="dcph-left">
-              <TierBadge tier={drug.tier}/>
-              <span className="drug-name-p">{drug.drug_name}</span>
-            </div>
-            <div className="dcph-right">
-              <div className="score-bar-mini">
-                <div className="sbt"><div className="sbf" style={{width:`${pct}%`,background:sc}}/></div>
-                <span className="sbn" style={{color:sc}}>{pct}/100</span>
-              </div>
-            </div>
-          </div>
-          <div className="drug-one-liner-p">{drug.one_line_summary}</div>
-          <div className="drug-details-p">
-            <div className="drug-exp-p">{drug.detailed_explanation}</div>
-            <div className="detail-sub">Key Interactions</div>
-            {drug.key_interactions.map((ki,i) => (
-              <div key={i} className="interaction-row-p">
-                <span className="int-icon">{icons[ki.interaction_type]||'·'}</span>
-                <div>
-                  <div className="int-desc">{ki.description}</div>
-                  <div className="int-impl">→ {ki.clinical_implication}</div>
-                  <div className="int-taxa">{ki.taxa_involved.join(' · ')}</div>
-                </div>
-              </div>
-            ))}
-            {drug.risk_flags?.length > 0 && <>
-              <div className="detail-sub" style={{marginTop:'0.4rem'}}>Risk Flags</div>
-              {drug.risk_flags.map((f,i) => <div key={i} className="risk-flag-p">{f}</div>)}
-            </>}
-            {drug.potential_adjustments && <>
-              <div className="detail-sub" style={{marginTop:'0.4rem'}}>Clinical Guidance</div>
-              <div className="adj-p">{drug.potential_adjustments}</div>
-            </>}
-          </div>
-        </div>
-      );
-    }
-
-    // ── Patient Report ────────────────────────────────────────────────────────
-    function PatientReport({ data, label }) {
-      const rec = data.recommendation;
-      return (
-        <>
-          {/* Header */}
-          <div className="page patient-header">
-            <div className="section-label">Patient Case</div>
-            <div className="section-title" style={{fontSize:'18pt'}}>{label}</div>
-            <div className="patient-id">{rec.patient_id} · {rec.diagnosis}</div>
-            <div className="patient-summary" style={{marginTop:'0.4rem'}}>{rec.recommendation_summary}</div>
-          </div>
-
-          {/* Microbiome + Scores */}
-          <TaxaSection taxa={data.taxa}/>
-          <DrugScoresSection scores={data.drug_scores}/>
-
-          {/* Network */}
-          <NetworkSection graph={data.graph}/>
-
-          {/* Drug Recommendations */}
-          <div className="print-card" style={{marginTop:'0.25rem'}}>
-            <div className="card-title">Agent 4 Output — Clinical Recommendations</div>
-          </div>
-          {rec.drug_recommendations.map(d => <PrintDrugCard key={d.drug_name} drug={d}/>)}
-
-          {/* Microbiome context */}
-          <div className="print-card avoid-break" style={{marginTop:'0.5rem'}}>
-            <div className="card-title">Microbiome Context</div>
-            <div style={{fontSize:'8pt',color:'var(--text2)',lineHeight:'1.6',marginBottom:'0.6rem'}}>{rec.microbiome_context.summary}</div>
-            {rec.microbiome_context.key_taxa_of_concern.map((t,i) => (
-              <div key={i} className="taxon-row" style={{background:'#fff'}}>
-                <span className="taxon-name" style={{minWidth:'150px'}}>{t.taxon}</span>
-                <span style={{fontSize:'7.5pt',color:'var(--text2)',flex:1}}>{t.concern}</span>
-                {t.drugs_affected?.length > 0 && <span style={{fontSize:'7pt',color:'var(--accent)',flexShrink:0}}>{t.drugs_affected.join(' · ')}</span>}
-              </div>
-            ))}
-          </div>
-
-          {/* Caveats */}
-          <div className="print-card avoid-break" style={{marginTop:'0.5rem'}}>
-            <div className="card-title">Limitations & Caveats</div>
-            {rec.limitations_and_caveats.map((c,i) => (
-              <div key={i} className="caveat-row">
-                <span className="caveat-num">{String(i+1).padStart(2,'0')}</span>
-                <span>{c}</span>
-              </div>
-            ))}
-          </div>
-          <div className="disclaimer-p">{rec.disclaimer}</div>
-        </>
-      );
-    }
-
-    // ── Cover ─────────────────────────────────────────────────────────────────
-    function Cover() {
-      const today = new Date().toLocaleDateString('en-US', {year:'numeric',month:'long',day:'numeric'});
-      return (
-        <div className="cover">
-          <div className="cover-tag">Pharmacomicrobiomics · Clinical Decision Support</div>
-          <div className="cover-title">Gut Instinct<br/>Analysis Report</div>
-          <div className="cover-sub">Microbiome-informed drug recommendations for psychiatric prescribing — mapping gut bacteria against candidate drug pharmacokinetics via a 4-agent AI pipeline.</div>
-          <div className="cover-meta">
-            <div className="cover-meta-item"><label>Report Date</label><span>{today}</span></div>
-            <div className="cover-meta-item"><label>Cases Included</label><span>DEMO-001 (MDD) · DEMO-002 (PTSD)</span></div>
-            <div className="cover-meta-item"><label>Pipeline</label><span>4-Agent Claude · Pharmacomicrobiomics KB</span></div>
-            <div className="cover-meta-item"><label>Data Mode</label><span>Pre-validated Simulation</span></div>
-          </div>
-          <div className="cover-disclaimer">This report is generated by a research prototype and is not validated for clinical use. All predictions are probabilistic and based on emerging pharmacomicrobiomics evidence. Microbiome-drug interactions are an active area of research. This tool does not replace clinical judgment.</div>
-        </div>
-      );
-    }
-
-    // ── Pipeline page ──────────────────────────────────────────────────────────
-    const AGENTS_DATA = [
-      {n:'01',name:'Pharmacokinetic Mapper',desc:'Extracts CYP enzyme pathways, protein binding, and glucuronidation flags for every candidate drug from a curated knowledge base.'},
-      {n:'02',name:'Ortholog Hunter',desc:"Matches human drug-metabolizing enzymes to bacterial orthologs present in this patient's microbiome, with evidence tiers and abundance weighting."},
-      {n:'03',name:'Graph Architect',desc:'Builds a drug-bacteria knowledge graph and computes a metabolic interference score (0–1) per drug based on ortholog degradation and GUS reactivation risk.'},
-      {n:'04',name:'Clinical Interpreter',desc:'Translates graph scores into tiered (Recommended / Consider / Caution) clinician-readable recommendations with specific taxa and mechanisms cited.'},
-    ];
-    function PipelinePage() {
-      return (
-        <div className="pipeline-section page avoid-break">
-          <div className="section-label">4-Agent AI Pipeline</div>
-          <div className="section-title">From microbiome profile to clinical guidance</div>
-          <div className="section-sub">Each agent is a Claude model with a curated pharmacomicrobiomics system prompt. Outputs chain forward sequentially.</div>
-          <div className="agents-grid">
-            {AGENTS_DATA.map(a => (
-              <div key={a.n} className="agent-box">
-                <div className="agent-num">{a.n}</div>
-                <div className="agent-name">{a.name}</div>
-                <div className="agent-desc">{a.desc}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      );
-    }
-
-    // ── App ────────────────────────────────────────────────────────────────────
-    function PrintApp() {
-      return (
-        <div style={{maxWidth:'680px',margin:'0 auto'}}>
-          <Cover/>
-          <PipelinePage/>
-          <PatientReport data={DEMO_RESULTS.patient1_mdd_dysbiosis} label="DEMO-001 — Major Depressive Disorder / Post-Antibiotic Dysbiosis"/>
-          <PatientReport data={DEMO_RESULTS.patient2_ptsd_glucuronidase} label="DEMO-002 — Post-Traumatic Stress Disorder / High β-Glucuronidase Load"/>
-        </div>
-      );
-    }
-
-    ReactDOM.createRoot(document.getElementById('root')).render(<PrintApp/>);
-
-    // Auto-print after fonts + Babel + render settle
-    document.fonts.ready.then(() => setTimeout(() => window.print(), 800));
+  <script>
+    // Auto-print after fonts + JSX have loaded.
+    (function(){
+      function go(){ try { window.print(); } catch(e) {} }
+      function ready(){
+        var fontsP = (document.fonts && document.fonts.ready) || Promise.resolve();
+        fontsP.then(function(){ setTimeout(go, 500); });
+      }
+      if (document.readyState === 'complete') ready();
+      else window.addEventListener('load', ready);
+    })();
   </script>
+
 </body>
 </html>
