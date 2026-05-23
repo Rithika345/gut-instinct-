@@ -422,8 +422,8 @@ function StructuralEvidence() {
     const pdbText = data.pdbs[selected.pdb_key];
     viewer.addModel(pdbText, 'pdb');
 
-    viewer.setStyle({ chain: 'A' }, { cartoon: { color: CHAIN_COLORS.A, opacity: 0.95 } });
-    viewer.setStyle({ chain: 'B' }, { cartoon: { color: CHAIN_COLORS.B, opacity: 0.9 } });
+    viewer.setStyle({ chain: 'A' }, { cartoon: { color: CHAIN_COLORS.A } });
+    viewer.setStyle({ chain: 'B' }, { cartoon: { color: CHAIN_COLORS.B } });
 
     const [lStartA, lEndA] = selected.l1_residues_chainA || [];
     const [lStartB, lEndB] = selected.l1_residues_chainB || [];
@@ -438,6 +438,11 @@ function StructuralEvidence() {
 
     viewer.zoomTo();
     viewer.render();
+    
+    // Hide the loading text once the model is rendered
+    const loader = viewerRef.current.querySelector('.struct-viewer-loading');
+    if (loader) loader.style.display = 'none';
+
   }, [selectedId, selected]);
 
   if (!data) {
